@@ -1,0 +1,139 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FoodDeliveryApp.MVVM"
+             xmlns:converters="clr-namespace:FoodDeliveryApp.Resources.Converters"
+             x:Class="FoodDeliveryApp.Pages.CartPage"
+             Padding="10">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:ImageUrlFromIdConverter x:Key="ImageUrlFromIdConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <VerticalStackLayout>
+    <HorizontalStackLayout>
+            <Frame HorizontalOptions="EndAndExpand" Padding="0" CornerRadius="50" Margin="275,10,0,10" BorderColor="Transparent" WidthRequest="110" HeightRequest="50">
+            <Button Text="Orders" 
+                FontSize="14" 
+                BackgroundColor="#f5f5f5" 
+                Padding="12"
+                FontAttributes="Bold"
+                TextColor="Black" 
+                
+                
+                
+                VerticalOptions="Center" 
+                Command="{Binding NavigateToOrdersCommand}">
+                <Button.ImageSource>
+                        <FileImageSource File="orders_icon.png" />
+                    </Button.ImageSource>
+            </Button>
+            </Frame>
+        </HorizontalStackLayout>
+    <ScrollView>
+        <StackLayout>
+            <!-- Iterate over each item in the cart -->
+            <CollectionView ItemsSource="{Binding CartItems}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout>
+                            <Grid Padding="5" ColumnSpacing="10">
+                                <!-- Image (25% of the frame) -->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Frame Padding="0" BorderColor="LightGray" CornerRadius="10" HeightRequest="100" WidthRequest="100" Grid.Column="0">
+                                    <!-- Image in the top half -->
+                                    <Image Source="{Binding Id, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                                        <Frame.GestureRecognizers>
+                                            <!-- TapGestureRecognizer for navigation -->
+                                            <TapGestureRecognizer 
+    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CartViewModel}}, Path=NavigateToDetailsCommand}" 
+    CommandParameter="{Binding}" />
+                                        </Frame.GestureRecognizers>
+                                    </Frame>
+
+                                <!-- Product Info (50% of the frame) -->
+                                <StackLayout Grid.Column="1" VerticalOptions="Center" Margin="10">
+                                    <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold"/>
+                                    <Label Text="{Binding RestaurantName}" FontSize="14" Margin="0,0,0,10"/>
+                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="14" FontAttributes="Bold" />
+                                        <StackLayout.GestureRecognizers>
+                                            <!-- TapGestureRecognizer for navigation -->
+                                            <TapGestureRecognizer 
+Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CartViewModel}}, Path=NavigateToDetailsCommand}" 
+CommandParameter="{Binding}" />
+                                        </StackLayout.GestureRecognizers>
+                                    </StackLayout>
+
+                                <!-- Quantity Controls (25% of the frame) -->
+                                <StackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="EndAndExpand">
+                                    <Frame Padding="0" CornerRadius="50" HeightRequest="40" WidthRequest="100" Margin="0,20,0,10">
+                                        <Grid RowDefinitions="*" ColumnDefinitions="*,Auto,*">
+                                            <!-- Decrease button -->
+                                            <Button Grid.Column="0"
+                Padding="0"
+                Text="−" 
+                CornerRadius="50"
+                FontAttributes="Bold" 
+                BackgroundColor="Transparent"
+                TextColor="Black"
+                FontSize="20"
+                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CartViewModel}}, Path=DecreaseQuantityCommand}" 
+                                    CommandParameter="{Binding}"
+                >
+                                                <Button.Triggers>
+                                                    <Trigger TargetType="Button" Property="IsPressed" Value="True">
+                                                        <Setter Property="BackgroundColor" Value="#E1E1E1" />
+                                                    </Trigger>
+                                                    </Button.Triggers>
+                                            </Button>
+                                            <!-- Quantity label -->
+                                            <Label Grid.Column="1" 
+               Text="{Binding Quantity}" 
+               FontSize="16" 
+               HorizontalTextAlignment="Center" 
+               Padding="0"
+               VerticalTextAlignment="Center" />
+                                            <!-- Increase button -->
+                                            <Button Grid.Column="2"
+                CornerRadius="50"
+                Text="+" 
+                FontAttributes="Bold" 
+                Padding="0"
+                FontSize="20"
+                BackgroundColor="Transparent"
+                TextColor="Black"
+                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CartViewModel}}, Path=IncreaseQuantityCommand}" 
+                                                    CommandParameter="{Binding}"
+                >
+                                                <Button.Triggers>
+                                                    <Trigger TargetType="Button" Property="IsPressed" Value="True">
+                                                        <Setter Property="BackgroundColor" Value="#E1E1E1" />
+                                                    </Trigger>
+                                                </Button.Triggers>
+                                            </Button>
+                                        </Grid>
+                                    </Frame>
+                                </StackLayout>
+                            </Grid>
+
+                            <!-- Horizontal line between items -->
+                            <BoxView HeightRequest="0.5" BackgroundColor="LightGray" HorizontalOptions="FillAndExpand" Margin="10"/>
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+
+            <!-- Total Price -->
+            <StackLayout Padding="10">
+                <Label Text="Total:" FontSize="18" FontAttributes="Bold" />
+                <Label Text="{Binding TotalPrice, StringFormat='{0:C}'}" FontSize="16" FontAttributes="Bold" />
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>
+    </VerticalStackLayout>
+</ContentPage>

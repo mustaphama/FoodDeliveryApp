@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FoodDeliveryApp.Pages.RegisterPage"
+             xmlns:local="clr-namespace:FoodDeliveryApp.MVVM"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             Title="RegisterPage">
+    <ContentPage.BindingContext>
+        <local:RegistrationViewModel/>
+    </ContentPage.BindingContext>
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="15">
+            <!-- Name Entry -->
+            <Label Text="Name" />
+            <Entry Placeholder="Enter your name" Text="{Binding Name}" />
+
+            <!-- Email Entry -->
+            <Label Text="Email" />
+            <Entry Placeholder="Enter your email" Text="{Binding Email}" Keyboard="Email" />
+
+            <!-- Password Entry -->
+            <Label Text="Password" />
+            <Entry Placeholder="Enter your password" Text="{Binding Password}" IsPassword="True" />
+
+            <!-- Confirm Password Entry -->
+            <Label Text="Confirm Password" />
+            <Entry Placeholder="Confirm your password" Text="{Binding ConfirmPassword}" IsPassword="True" />
+
+            <!-- Phone Number Section -->
+            <Label Text="Phone Number" />
+            <StackLayout Orientation="Horizontal">
+                <!-- Region Code Picker -->
+                <Picker Title="Region Code" ItemsSource="{Binding RegionCodes}" SelectedItem="{Binding SelectedRegionCode}" WidthRequest="100" />
+                <!-- Phone Number Entry -->
+                <Entry Placeholder="123456789" Text="{Binding PhoneNumber}" Keyboard="Telephone" MaxLength="9" WidthRequest="200" />
+            </StackLayout>
+
+            <!-- Address Entry -->
+            <Label Text="Address" />
+            <Entry Placeholder="Enter your address" Text="{Binding Address}" />
+
+            <!-- Register Button -->
+            <Button Text="Register" Command="{Binding RegisterCommand}" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

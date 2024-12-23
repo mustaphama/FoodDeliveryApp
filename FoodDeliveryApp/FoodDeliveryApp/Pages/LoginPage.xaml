@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FoodDeliveryApp.Pages.LoginPage"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewmodels="clr-namespace:FoodDeliveryApp.MVVM"
+             Shell.FlyoutBehavior="Disabled"
+             Title="LoginPage">
+    <ContentPage.BindingContext>
+        <viewmodels:LoginViewModel/>
+    </ContentPage.BindingContext>
+
+    <StackLayout Padding="20">
+        <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email">
+            <Entry.Behaviors>
+                <toolkit:EmailValidationBehavior />
+            </Entry.Behaviors>
+        </Entry>
+        <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True">
+        </Entry>
+        <Button Text="Login" Command="{Binding LoginCommand}" />
+        <Label Text="{Binding Message}" TextColor="Red" FontAttributes="Bold" HorizontalOptions="Center" />
+    </StackLayout>
+</ContentPage>

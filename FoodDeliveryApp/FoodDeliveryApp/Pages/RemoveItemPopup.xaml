@@ -1,0 +1,36 @@
+<communityToolkit:Popup
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:communityToolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="FoodDeliveryApp.Popups.RemoveItemPopup"
+    Size="300,200"
+    CanBeDismissedByTappingOutsideOfPopup="True"
+    Color="Transparent">
+
+    <Frame CornerRadius="15" Padding="20" BackgroundColor="White" VerticalOptions="Center">
+        <VerticalStackLayout>
+            <Label Text="{Binding ItemName}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
+            <Label Text="Are you sure you want to remove this item from your cart?" 
+                   FontSize="14" 
+                   HorizontalOptions="Center"
+                   Margin="0,10,0,20"
+                   TextColor="Gray" />
+
+            <HorizontalStackLayout Spacing="50" Margin="0,10,0,0">
+                <Button Text="No" 
+        BackgroundColor="LightGray" 
+        HorizontalOptions="Start"
+        TextColor="White" 
+        MinimumWidthRequest="75"
+        Clicked="OnNoClicked" />
+                <BoxView HorizontalOptions="FillAndExpand" />
+                <Button Text="Yes" 
+                        HorizontalOptions="End" 
+                        TextColor="White" 
+                        MinimumWidthRequest="75"
+                        Clicked="OnYesClicked" />
+                
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </Frame>
+</communityToolkit:Popup>

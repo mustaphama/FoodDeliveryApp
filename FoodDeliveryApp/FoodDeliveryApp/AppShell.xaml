@@ -1,0 +1,50 @@
+<Shell
+    x:Class="FoodDeliveryApp.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:FoodDeliveryApp"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:pages="clr-namespace:FoodDeliveryApp.Pages"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="False"
+    Title="FoodDeliveryApp">
+
+    <Shell.Behaviors>
+        <toolkit:StatusBarBehavior 
+            StatusBarStyle="DarkContent" 
+            StatusBarColor="{StaticResource Secondary}" />
+    </Shell.Behaviors>
+
+    <!-- Non-tab pages -->
+    <ShellContent Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
+    <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate pages:LoginPage}" />
+    <ShellContent Route="RegisterPage" ContentTemplate="{DataTemplate pages:RegisterPage}" />
+    <ShellContent Route="ProductDetailsPage"
+              ContentTemplate="{DataTemplate pages:ProductDetailsPage}"/>
+
+    <!-- TabBar for main pages -->
+    <TabBar x:Name="MainTabBar" IsVisible="True">
+        <ShellContent Title="Home"
+            Icon="home_icon"
+            ContentTemplate="{DataTemplate pages:HomePage}"
+            Route="HomePage">
+        </ShellContent>
+
+        <ShellContent Title="Cart"
+            Icon="cart_icon"
+            ContentTemplate="{DataTemplate pages:CartPage}"
+            Route="CartPage" />
+        <ShellContent Title="Locations"
+            Icon="location_icon"
+            ContentTemplate="{DataTemplate pages:LocationPage}"
+            Route="LocationPage" />
+        <ShellContent Title="Promotions"
+            Icon="promotion_icon"
+            ContentTemplate="{DataTemplate pages:PromotionPage}"
+            Route="PromotionPage" />
+        <ShellContent Title="Profile"
+            Icon="profile_icon"
+            ContentTemplate="{DataTemplate pages:ProfilePage}"
+            Route="ProfilePage" />
+    </TabBar>
+</Shell>

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FoodDeliveryApp.MainPage"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+            xmlns:local="clr-namespace:FoodDeliveryApp.MVVM"
+            Shell.FlyoutBehavior="Disabled"
+            xmlns:pages="clr-namespace:FoodDeliveryApp.Pages">
+    <ContentPage.BindingContext>
+        <local:MainPageViewModel/>
+    </ContentPage.BindingContext>
+
+    <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
+        <Label Text="Welcome to Food Delivery App" 
+               FontSize="Large" 
+               HorizontalOptions="Center" />
+
+        <Button Text="Login" 
+                Command="{Binding NavigateToLoginCommand}" 
+                Margin="0,20,0,0" />
+
+        <Button Text="Register" 
+                Command="{Binding NavigateToRegisterCommand}" 
+                Margin="0,10,0,0" />
+    </StackLayout>
+
+</ContentPage>
