@@ -78,25 +78,73 @@ namespace FDA.Controllers
                 userId = user.Id // Add userId in the response
             });
         }
+        [HttpPut("modifyPassword")]
+        public async Task<IActionResult> ModifyPassword([FromBody] ModifyPasswordRequest request)
+        {
+            // Validate the user's old password
+            var user = await _context.Users.FindAsync(request.UserId);
+            if (user == null) return NotFound("User not found.");
 
+            var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(null, user.PasswordHash, request.OldPassword);
+            if (passwordVerificationResult != PasswordVerificationResult.Success)
+            {
+                return BadRequest("Incorrect old password.");
+            }
 
-    }
+            // Update to the new password
+            user.PasswordHash = _passwordHasher.HashPassword(null, request.NewPassword);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
 
-    // Request model for registration
-    public class RegisterRequest
-    {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Address { get; set; }
-        public string ProfilePictureUrl { get; set; }
-    }
+            return Ok("Password updated successfully.");
+        }
+        [HttpPut("modifyEmail")]
+        public async Task<IActionResult> ModifyEmail([FromBody] ModifyEmailRequest request)
+        {
+            // Validate the user's password
+            var user = await _context.Users.FindAsync(request.UserId);
+            if (user == null) return NotFound("User not found.");
 
-    // Request model for login
-    public class LoginRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
+            var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(null, user.PasswordHash, request.Password);
+            if (passwordVerificationResult != PasswordVerificationResult.Success)
+            {
+                return BadRequest("Incorrect password.");
+            }
+
+            // Check if the new email is already taken
+            if (_context.Users.Any(u => u.Email == request.NewEmail))
+            {
+                return BadRequest("The email is already in use.");
+            }
+
+            // Update to the new email
+            user.Email = request.NewEmail;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok("Email updated successfully.");
+        }
+        // In UserController.cs
+        [HttpPut("modifyName")]
+        public async Task<IActionResult> ModifyName([FromBody] ModifyNameRequest request)
+        {
+            // Validate the user's password
+            var user = await _context.Users.FindAsync(request.UserId);
+            if (user == null) return NotFound("User not found.");
+
+            var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(null, user.PasswordHash, request.Password);
+            if (passwordVerificationResult != PasswordVerificationResult.Success)
+            {
+                return BadRequest("Incorrect password.");
+            }
+
+            // Update the user's name
+            user.Name = request.NewName;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok("Name updated successfully.");
+        }
+
     }
 }

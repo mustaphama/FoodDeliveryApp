@@ -11,7 +11,7 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display name -->
-		<ApplicationTitle>FoodDeliveryApp</ApplicationTitle>
+		<ApplicationTitle>FDA</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.fooddeliveryapp</ApplicationId>
@@ -30,10 +30,10 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\fda_iconfg.svg" Color="#f5835e" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#f5835e" BaseSize="128,128" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
@@ -44,22 +44,6 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <AndroidResource Remove="NewFolder\**" />
-	  <Compile Remove="NewFolder\**" />
-	  <EmbeddedResource Remove="NewFolder\**" />
-	  <MauiCss Remove="NewFolder\**" />
-	  <MauiXaml Remove="NewFolder\**" />
-	  <None Remove="NewFolder\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Remove="Resources\Images\categoryIcons\chinese.png" />
-	  <None Remove="Resources\Images\categoryIcons\dessert.png" />
-	  <None Remove="Resources\Images\food_images\bacon_burger.jpeg" />
-	  <None Remove="Resources\Images\profile_picture.jpg" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -87,6 +71,9 @@
 	<ItemGroup>
 	  <Compile Update="Pages\CartPage.xaml.cs">
 	    <DependentUpon>CartPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\ModifyAddressPage.xaml.cs">
+	    <DependentUpon>ModifyAddressPage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 

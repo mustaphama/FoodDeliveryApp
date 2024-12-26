@@ -1,15 +1,18 @@
 ﻿using FoodDeliveryApp.Models;
 using Microsoft.Maui.Storage;
+using System.Diagnostics;
 using System.Text.Json;
 
 public class CartService
 {
     private const string CartKey = "CartData";
-    private readonly List<CartItem> _cartItems;
+    private readonly List<CartItem> _cartItems = new List<CartItem>();
 
     public CartService()
     {
+        Debug.WriteLine(_cartItems);
         _cartItems = LoadCartFromPreferences();
+        Debug.WriteLine(_cartItems);
     }
 
     public IReadOnlyList<CartItem> GetCartItems() => _cartItems.AsReadOnly();
@@ -57,6 +60,16 @@ public class CartService
             var json = Preferences.Get(CartKey, string.Empty);
             return JsonSerializer.Deserialize<List<CartItem>>(json) ?? new List<CartItem>();
         }
+        else
+        {
+            ClearCart();
+        }
         return new List<CartItem>();
+    }
+    public void ClearCart()
+    {
+        Preferences.Remove(CartKey);
+        _cartItems.Clear(); // Clears the cart in memory as well
+        SaveCartToPreferences();
     }
 }
