@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FoodDeliveryApp.MVVM"
+             xmlns:converters="clr-namespace:FoodDeliveryApp.Resources.Converters"
+             x:Class="FoodDeliveryApp.Pages.CategoryPage"
+             Title="CategoryPage">
+    <ContentPage.BindingContext>
+        <viewmodels:CategoryViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:CategoryIconConverter x:Key="CategoryIconConverter" />
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+            <converters:ImageUrlFromIdConverter x:Key="ImageUrlFromIdConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Header -->
+            <RowDefinition Height="Auto" />
+            <!-- Content -->
+            <RowDefinition Height="*" />
+            <!-- Footer -->
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <HorizontalStackLayout Grid.Row="0">
+            <Button Text="&#xf053;" FontFamily="FontAwesome" FontSize="16" Command="{Binding NavigateBackCommand}" FontAttributes="Bold" Margin="10,0,0,0" BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+            <Label  Text="{Binding CategoryName}" FontSize="20" FontAttributes="Bold" Margin="20"></Label>
+        </HorizontalStackLayout>
+        <VerticalStackLayout Grid.Row="1">
+            <CollectionView ItemsSource="{Binding FoodItems}" Margin="0,0,0,10">
+                <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid RowDefinitions="3*,*" ColumnDefinitions="*" Padding ="5">
+                        <Grid.GestureRecognizers>
+                            <!-- TapGestureRecognizer for navigation -->
+                            <TapGestureRecognizer 
+        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CategoryViewModel}}, Path=NavigateToDetailsCommand}" 
+        CommandParameter="{Binding}"/>
+                        </Grid.GestureRecognizers>
+                        <Frame Padding="0" BorderColor="LightGray" CornerRadius="15" HeightRequest="190" Margin="10,0,10,0">
+
+                            <!-- Image in the top half -->
+                            <Image Source="{Binding FoodItemId, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                            <!-- Details in the bottom half -->
+                            <Frame.GestureRecognizers>
+                                <!-- TapGestureRecognizer for navigation -->
+                                <TapGestureRecognizer 
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CategoryViewModel}}, Path=NavigateToDetailsCommand}" 
+                        CommandParameter="{Binding}"/>
+                            </Frame.GestureRecognizers>
+
+                        </Frame>
+                        <Grid Grid.Row="1" RowDefinitions="*,*" ColumnDefinitions="*,*" Padding="10,1,1,1" Margin="1" VerticalOptions="Center">
+                            <Label Grid.Row="0" Grid.Column="0" Padding="10,0,0,0"  Text="{Binding FoodName}" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="Start" />
+                                <Label Grid.Row="1" Grid.Column="0" Padding="10,0,0,0" Text="{Binding Restaurant.RestaurantName}" FontSize="14" HorizontalTextAlignment="Start" TextColor="DarkSlateGrey"/>
+                                <Label Grid.Row="1" Grid.Column="1"  Text="4.7 ★ (120+) · 25 min" FontSize="12" HorizontalTextAlignment="Center" TextColor="DarkSlateGrey" />
+                                <Label Grid.Row="0" Grid.Column="1"  Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="16" TextColor="Green" HorizontalTextAlignment="Center" />
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+        </Grid>
+</ContentPage>

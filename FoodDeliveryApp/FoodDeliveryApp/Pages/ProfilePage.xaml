@@ -1,12 +1,130 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FoodDeliveryApp.MVVM"
              x:Class="FoodDeliveryApp.Pages.ProfilePage"
              Title="ProfilePage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            <!-- Profile Picture -->
+            <Frame Padding="0" CornerRadius="100" HorizontalOptions="Center" Margin="0,20,0,0" BorderColor="Transparent">
+                <Image x:Name="ProfilePicture"
+                   Source="profile_picture.png"
+                   WidthRequest="150"
+                   HeightRequest="150"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   Aspect="AspectFill"
+                   />
+            </Frame>
+
+            <!-- User's Name -->
+            <Label x:Name="UserNameLabel"
+                   Text="{Binding UserName}" 
+                   FontSize="24" 
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+
+            <!-- Grid for clickable rows -->
+            <VerticalStackLayout Spacing="10">
+                <Grid ColumnDefinitions="Auto, 8*, 2*" Padding="10" ColumnSpacing="10">
+                    <!-- FontAwesome Icon -->
+                    <Label Text="&#xf2bb;" 
+           FontFamily="FontAwesome" 
+           FontSize="18"
+           VerticalOptions="Center"
+           HorizontalOptions="Center"
+           Grid.Column="0" />
+
+                    <!-- Text Label -->
+                    <Label Text="Profile Details"
+           FontSize="18"
+           VerticalOptions="Center"
+           Grid.Column="1" />
+
+                    <!-- Arrow Icon -->
+                    <Label Text="&#xf054;" 
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="End"
+Grid.Column="2" />
+
+                    <!-- Gesture for Tap -->
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToProfileDetailsCommand}" />
+                    </Grid.GestureRecognizers>
+                </Grid>
+
+                <!-- Modify Address Row -->
+                <Grid ColumnDefinitions="Auto, 8*, 2*" Padding="10" ColumnSpacing="10">
+                    <!-- FontAwesome Icon -->
+                    <Label Text="&#xf3c5;" 
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="Center"
+Grid.Column="0" />
+                    <Label Text="Modify Address"
+                           FontSize="18"
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                    <Label Text="&#xf054;" 
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="End"
+Grid.Column="2" />
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ModifyAddressCommand}" />
+                    </Grid.GestureRecognizers>
+                </Grid>
+
+                <!-- Change Phone Number Row -->
+                <Grid ColumnDefinitions="Auto, 8*, 2*" Padding="10" ColumnSpacing="10">
+                    <!-- FontAwesome Icon -->
+                    <Label Text="&#xf3cd;" 
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="Center"
+Grid.Column="0" />
+                    <Label Text="Change Phone Number"
+                           FontSize="18"
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                    <Label Text="&#xf054;" 
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="End"
+Grid.Column="2" />
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ChangePhoneNumberCommand}" />
+                    </Grid.GestureRecognizers>
+                </Grid>
+
+                <!-- Log Out Row -->
+                <Grid ColumnDefinitions="Auto,8*" Padding="10" ColumnSpacing="10">
+                    <Label Text="Log Out"
+                           FontSize="18"
+                           TextColor="Red"
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                    <!-- FontAwesome Icon -->
+                    <Label Text="&#xf2f5;" 
+                           TextColor="Red"
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="End"
+Grid.Column="0"/>
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding LogoutCommand}" />
+                    </Grid.GestureRecognizers>
+                </Grid>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

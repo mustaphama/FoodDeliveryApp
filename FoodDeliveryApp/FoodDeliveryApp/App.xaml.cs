@@ -26,6 +26,17 @@ namespace FoodDeliveryApp
         private void RegisterRoutes()
         {
             Routing.RegisterRoute("ProductDetailsPage", typeof(ProductDetailsPage));
+            Routing.RegisterRoute("ModifyAddressPage", typeof(ModifyAddressPage));
+            Routing.RegisterRoute("ModifyPhonePage", typeof(ModifyPhonePage));
+            Routing.RegisterRoute("ProfileDetailsPage", typeof(ProfileDetailsPage));
+            Routing.RegisterRoute("ModifyNamePage", typeof(ModifyNamePage));
+            Routing.RegisterRoute("ModifyEmailPage", typeof(ModifyEmailPage));
+            Routing.RegisterRoute("ModifyPasswordPage", typeof(ModifyPasswordPage));
+            Routing.RegisterRoute("DeliveryDetailsPage", typeof(DeliveryDetailsPage));
+            Routing.RegisterRoute("OrderStatusPage", typeof(OrderStatusPage));
+            Routing.RegisterRoute("CategoryPage", typeof(CategoryPage));
+            Routing.RegisterRoute("SearchPage", typeof(SearchPage));
+
         }
         private bool IsUserLoggedIn()
         {
@@ -34,5 +45,6 @@ namespace FoodDeliveryApp
             int userId = Preferences.Get("UserId", 0); // Default to 0 if not found
             return isLoggedIn && userId > 0;
         }
+
     }
 }

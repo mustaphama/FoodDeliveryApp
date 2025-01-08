@@ -1,0 +1,57 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FoodDeliveryApp.MVVM"
+             xmlns:converters="clr-namespace:FoodDeliveryApp.Resources.Converters"
+             x:Class="FoodDeliveryApp.Pages.SearchPage"
+             Title="Search">
+
+    <ContentPage.BindingContext>
+        <viewmodels:SearchViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:ImageUrlFromIdConverter x:Key="ImageUrlFromIdConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout Padding="10">
+        <!-- Search Bar -->
+        <SearchBar Placeholder="Search for your favorite foods..."
+                   Text="{Binding SearchQuery}"
+                   SearchCommand="{Binding PerformSearchCommand}" Margin="0,0,0,15" />
+
+        <!-- Search Results -->
+        <CollectionView ItemsSource="{Binding SearchResults}" Margin="0,0,0,10">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid RowDefinitions="3*,*" ColumnDefinitions="*" Padding ="5">
+                        <Grid.GestureRecognizers>
+                            <!-- TapGestureRecognizer for navigation -->
+                            <TapGestureRecognizer 
+Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SearchViewModel}}, Path=NavigateToDetailsCommand}" 
+CommandParameter="{Binding}"/>
+                        </Grid.GestureRecognizers>
+                        <Frame Padding="0" BorderColor="LightGray" CornerRadius="15" HeightRequest="190" Margin="10,0,10,0">
+
+                            <!-- Image in the top half -->
+                            <Image Source="{Binding Id, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                            <!-- Details in the bottom half -->
+                            <Frame.GestureRecognizers>
+                                <!-- TapGestureRecognizer for navigation -->
+                                <TapGestureRecognizer 
+                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SearchViewModel}}, Path=NavigateToDetailsCommand}" 
+                CommandParameter="{Binding}"/>
+                            </Frame.GestureRecognizers>
+
+                        </Frame>
+                        <Grid Grid.Row="1" RowDefinitions="*,*" ColumnDefinitions="*,*" Padding="10,1,1,1" Margin="1" VerticalOptions="Center">
+                            <Label Grid.Row="0" Grid.Column="0" Padding="10,0,0,0"  Text="{Binding Name}" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="Start"/>
+                            <Label Grid.Row="1" Grid.Column="0" Padding="10,0,0,0" Text="{Binding RestaurantName}" FontSize="14" HorizontalTextAlignment="Start" TextColor="DarkSlateGrey"/>
+                            <Label Grid.Row="1" Grid.Column="1"  Text="4.7 ★ (120+) · 25 min" FontSize="12" HorizontalTextAlignment="Center" TextColor="DarkSlateGrey" />
+                            <Label Grid.Row="0" Grid.Column="1"  Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="16" TextColor="Green" HorizontalTextAlignment="Center" />
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>

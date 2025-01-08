@@ -28,6 +28,7 @@ public partial class ProductDetailsViewModel : ObservableObject, IQueryAttributa
             
         });
         AddToCartCommand = new Command(AddToCart);
+        NavigateToCartCommand = new Command(NavigateToCart);
     }
     private int _quantity = 1;
     public int Quantity
@@ -49,6 +50,7 @@ public partial class ProductDetailsViewModel : ObservableObject, IQueryAttributa
     public ICommand IncreaseQuantityCommand { get; }
     public ICommand DecreaseQuantityCommand { get; }
     public ICommand AddToCartCommand { get; }
+    public ICommand NavigateToCartCommand { get; }
 
     private Product _selectedProduct;
     public Product SelectedProduct
@@ -73,7 +75,7 @@ public partial class ProductDetailsViewModel : ObservableObject, IQueryAttributa
     }
     // Animation logic
 
-    private async void AddToCart()
+    private void AddToCart()
     {
         if (SelectedProduct == null)
         {
@@ -105,12 +107,16 @@ public partial class ProductDetailsViewModel : ObservableObject, IQueryAttributa
                 quantity: Quantity,
                 price: SelectedProduct.Price
             );
-            
+
             Debug.WriteLine($"{Quantity} x {SelectedProduct.Name} added to cart.");
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Error adding item to cart: {ex.Message}");
         }
+    }
+    private async void NavigateToCart()
+    {
+        await Shell.Current.GoToAsync("//CartPage");
     }
 }

@@ -67,6 +67,28 @@ namespace FDA.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchFoodItems(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest("Query cannot be empty.");
+
+            var results = await _context.FoodItems
+                .Where(f => f.Name.Contains(query) || f.Description.Contains(query))
+                .Select(f => new
+                {
+                    f.Id,
+                    f.Name,
+                    f.Description,
+                    f.Price,
+                    f.ImageUrl,
+                    RestaurantName = f.Menu.Restaurant.Name
+                })
+                .ToListAsync();
+
+            return Ok(results);
+        }
+
 
         [HttpGet("FoodItemWithRestaurant/{id}")]
         public async Task<ActionResult<FoodItemWithRestaurantDto>> GetFoodItemWithRestaurant(int id)

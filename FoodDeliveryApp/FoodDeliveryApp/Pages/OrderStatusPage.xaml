@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FoodDeliveryApp.MVVM"
+             x:Class="FoodDeliveryApp.Pages.OrderStatusPage"
+             Title="OrderStatusPage">
+    <ContentPage.BindingContext>
+        <viewmodels:OrderStatusViewModel />
+    </ContentPage.BindingContext>
+
+    <!-- Pull to refresh functionality -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Header -->
+            <RowDefinition Height="Auto" />
+            <!-- Content -->
+            <RowDefinition Height="*" />
+            <!-- Footer -->
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0"  Text="Order Status" FontSize="20" FontAttributes="Bold" Margin="20"></Label>
+        <RefreshView Grid.Row="1" IsRefreshing="{Binding IsRefreshing}"
+                Command="{Binding RefreshOrderStatusCommand}">
+        <ScrollView>
+                <StackLayout>
+
+                    <Image Source="{Binding StatusImageSource}" 
+HeightRequest="150" 
+WidthRequest="150" IsAnimationPlaying="True" />
+
+                    <!-- Order status display -->
+                        <Label Text="{Binding VisualOrderStatus}" 
+                       FontSize="22"
+                       HorizontalOptions="Center" 
+                       Margin="20" VerticalOptions="Center" FontAttributes="Bold" TextColor="Black" />
+                 
+                    <!-- Progress bar to visualize order status -->
+                <ProgressBar Progress="{Binding OrderProgress}" 
+                             ProgressColor="{DynamicResource Primary}"
+                             HorizontalOptions="FillAndExpand" />
+            </StackLayout>
+        </ScrollView>
+    </RefreshView>
+    </Grid>
+</ContentPage>

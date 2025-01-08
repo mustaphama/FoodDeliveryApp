@@ -59,6 +59,63 @@ namespace FoodDeliveryApp.Models
         public string RestaurantLocation { get; set; }
         public int Quantity { get; set; } // New property
     }
+    public class User
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string PasswordHash { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Address { get; set; }
+        public string ProfilePictureUrl { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+    public class ChangePasswordRequest
+    {
+        public string OldPassword { get; set; }
+        public string NewPassword { get; set; }
+        public string ConfirmNewPassword { get; set; }
+    }
+    public class CartRequest
+    {
+        public int UserId { get; set; } // Retrieve this from Preferences
+        public List<CartItem> CartItems { get; set; }
+    }
+    public class OrderResponse
+    {
+        public string Message { get; set; }
+        public int OrderId { get; set; }
+    }
+    public class FoodItemDto
+    {
+        public int FoodItemId { get; set; }
+        public string FoodName { get; set; }
+        public string Description { get; set; }
+        public decimal Price { get; set; }
+        public string ImageUrl { get; set; }
+        public bool IsAvailable { get; set; }
+        public RestaurantDto Restaurant { get; set; }
+    }
 
+    public class RestaurantDto
+    {
+        public int RestaurantId { get; set; }
+        public string RestaurantName { get; set; }
+        public string Location { get; set; }
+        public string LogoUrl { get; set; }
+    }
+    public class CategoryDto
+    {
+        public int Id { get; set; }
+        public string CategoryName { get; set; }
+    }
+    public class FoodItemsSearchQuery
+    {
+        public int Id { get; set; }
+        public string Description { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string RestaurantName { get; set; }
+    }
 
 }

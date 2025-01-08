@@ -76,7 +76,7 @@ CREATE TABLE Orders (
     UserId INT FOREIGN KEY REFERENCES Users(Id),
     RestaurantId INT FOREIGN KEY REFERENCES Restaurants(Id),
     TotalAmount DECIMAL(10, 2),
-    OrderStatus NVARCHAR(50),
+    OrderStatus NVARCHAR(50) NOT NULL CHECK (OrderStatus IN ('Pending', 'Confirmed', 'Preparing', 'Ready for Pickup', 'Out for Delivery', 'Delivered', 'Completed', 'Cancelled')),
     OrderDate DATETIME DEFAULT GETDATE(),
     DeliveryGuyId INT FOREIGN KEY REFERENCES DeliveryGuys(Id),
     PromotionCardId INT FOREIGN KEY REFERENCES PromotionCards(Id),

@@ -6,6 +6,8 @@ using System.Net.Http.Headers;
 using System.Diagnostics;
 using FoodDeliveryApp.Models;
 using System.Text.Json;
+using Microsoft.Maui.ApplicationModel.Communication;
+using System.Net.Http.Json;
 
 public class ApiService
 {
@@ -191,6 +193,367 @@ public class ApiService
             Debug.WriteLine($"Error fetching products by IDs: {ex.Message}");
             throw;
         }
+    }
+    // Fetch user profile details from API by UserId
+    public async Task<User> GetUserProfileAsync(string userId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/Users/{userId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var user = JsonConvert.DeserializeObject<User>(json);
+                return user;
+            }
+            else
+            {
+                throw new Exception("Failed to fetch user profile data.");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error fetching user profile: {ex.Message}");
+        }
+    }
+    public async Task<string> GetUserAddressAsync(string userId)
+{
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/Users/{userId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var user = JsonConvert.DeserializeObject<User>(json);
+                return user.Address;
+            }
+            else
+            {
+                throw new Exception("Failed to fetch user profile data.");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error fetching user profile: {ex.Message}");
+        }
+    }
+    public async Task<string> GetUserPhoneAsync(string userId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/Users/{userId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var user = JsonConvert.DeserializeObject<User>(json);
+                return user.PhoneNumber;
+            }
+            else
+            {
+                throw new Exception("Failed to fetch user profile data.");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error fetching user profile: {ex.Message}");
+        }
+    }
+    public async Task<bool> UpdateUserAddressAsync(string userId, string newAddress)
+    {
+        try
+        {
+            // Create a payload with the new address
+            var payload = new { Address = newAddress };
+
+            // Serialize the payload to JSON
+            var jsonPayload = JsonConvert.SerializeObject(payload);
+
+            // Create a StringContent object with the JSON payload
+            var content = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+
+            // Make the PUT request to update the user's address
+            var response = await _httpClient.PutAsync($"api/Users/{userId}/address", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true; // Address updated successfully
+            }
+            else
+            {
+                throw new Exception("Failed to update user address.");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error updating user address: {ex.Message}");
+        }
+    }
+    public async Task<bool> UpdateUserPhoneAsync(string userId, string newPhone)
+    {
+        try
+        {
+            // Create a payload with the new address
+            var payload = new { Phone = newPhone };
+
+            // Serialize the payload to JSON
+            var jsonPayload = JsonConvert.SerializeObject(payload);
+
+            // Create a StringContent object with the JSON payload
+            var content = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+
+            // Make the PUT request to update the user's address
+            var response = await _httpClient.PutAsync($"api/Users/{userId}/phoneNumber", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true; // Address updated successfully
+            }
+            else
+            {
+                throw new Exception("Failed to update user phone number.");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error updating user phone number: {ex.Message}");
+        }
+    }
+    public async Task<(bool IsSuccess, string ErrorMessage)> ModifyPasswordAsync(int userId, string oldPassword, string newPassword)
+    {
+        try
+        {
+            // Prepare the payload with the old and new passwords
+            var payload = new
+            {
+                UserId = userId,
+                OldPassword = oldPassword,
+                NewPassword = newPassword
+            };
+
+            // Serialize the payload to JSON
+            var jsonPayload = JsonConvert.SerializeObject(payload);
+
+            // Create a StringContent object with the JSON payload
+            var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+            // Make the PUT request to modify the password
+            var response = await _httpClient.PutAsync("api/Auth/modifyPassword", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, "Password updated successfully.");
+            }
+            else
+            {
+                // Read the error message from the response content
+                var errorContent = await response.Content.ReadAsStringAsync();
+                return (false, $"Failed to update password. Server response: {errorContent}");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Debug.WriteLine($"Request Exception: {ex.Message}");
+            return (false, "Unable to connect to the server.");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Unexpected Exception: {ex.Message}");
+            return (false, "An unexpected error occurred.");
+        }
+    }
+    public async Task<(bool IsSuccess, string ErrorMessage)> ModifyEmailAsync(int userId, string newEmail, string password)
+    {
+        try
+        {
+            var requestData = new
+            {
+                UserId = userId,
+                NewEmail = newEmail,
+                Password = password
+            };
+
+            var json = JsonConvert.SerializeObject(requestData);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync($"api/Auth/modifyEmail", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseData = await response.Content.ReadAsStringAsync();
+                var apiResponse = JsonConvert.DeserializeObject<String>(responseData);
+                return (true, apiResponse);
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine($"Error: {response.StatusCode}, {errorContent}");
+                return (false, "Failed to update email.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error updating email: {ex.Message}");
+            return (false, "An error occurred while updating the email.");
+        }
+    }
+    public async Task<string> GetUserEmailAsync(int userId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/Users/getEmail/{userId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var email = await response.Content.ReadAsStringAsync();
+                return email;
+            }
+            else
+            {
+                throw new Exception("Failed to fetch current email.");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error fetching user email: {ex.Message}");
+        }
+    }
+    public async Task<(bool IsSuccess, string ErrorMessage)> ModifyNameAsync(int userId, string newName, string password)
+    {
+        try
+        {
+            var requestData = new
+            {
+                UserId = userId,
+                NewName = newName,
+                Password = password
+            };
+
+            var json = JsonConvert.SerializeObject(requestData);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync($"api/Auth/modifyName", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseData = await response.Content.ReadAsStringAsync();
+                var apiResponse = JsonConvert.DeserializeObject<String>(responseData);
+                return (true, apiResponse);
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine($"Error: {response.StatusCode}, {errorContent}");
+                return (false, "Failed to update name.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error updating name: {ex.Message}");
+            return (false, "An error occurred while updating the name.");
+        }
+    }
+    public async Task<(bool IsSuccess, string ErrorMessage, int OrderId)> PlaceOrderAsync(CartRequest cartRequest)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/Orders/PlaceOrder", cartRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                
+                var rawResponse = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine($"Raw Response: {rawResponse}");
+                var responseData = await response.Content.ReadFromJsonAsync<OrderResponse>();
+                return (true, responseData.Message, responseData.OrderId); // Success, no error message, valid OrderId
+            }
+            else
+            {
+                var errorMessage = $"Error placing order: {response.StatusCode}";
+                Debug.WriteLine(errorMessage);
+                return (false, errorMessage, 0); // Failure, error message, invalid OrderId
+            }
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = $"Exception while placing order: {ex.Message}";
+            Debug.WriteLine(errorMessage);
+            return (false, errorMessage, 0); // Failure, error message, invalid OrderId
+        }
+    }
+    public async Task<(bool IsSuccess, string Status, string ErrorMessage)> GetOrderStatusAsync(int orderId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/orders/{orderId}/status");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var orderStatus = await response.Content.ReadFromJsonAsync<string>();
+                return (true, orderStatus, string.Empty);
+            }
+            else
+            {
+                var errorMessage = $"Error fetching order status: {response.StatusCode}";
+                return (false, string.Empty, errorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            return (false, string.Empty, ex.Message);
+        }
+    }
+    public async Task<List<FoodItemDto>> GetFoodItemsByCategoryAsync(int categoryId)
+    {
+        var response = await _httpClient.GetAsync($"api/Categories/{categoryId}/food-items");
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            return System.Text.Json.JsonSerializer.Deserialize<List<FoodItemDto>>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        }
+
+        throw new Exception($"Error fetching food items: {response.ReasonPhrase}");
+    }
+    public async Task<CategoryDto> GetCategoryByIdAsync(int categoryId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/categories/{categoryId}");
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<CategoryDto>();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error fetching category: {ex.Message}");
+            return null;
+        }
+    }
+    public async Task<List<FoodItemsSearchQuery>> SearchFoodItemsAsync(string query)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/FoodItems/search?query={query}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return System.Text.Json.JsonSerializer.Deserialize<List<FoodItemsSearchQuery>>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+            throw new Exception($"{response.ReasonPhrase}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error while searching {ex.Message}");
+            return null;
+        }
+
     }
 
 }

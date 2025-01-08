@@ -25,9 +25,10 @@ namespace FoodDeliveryApp.MVVM
         public ObservableCollection<MostOrderedCategory> Categories { get; }
         public ObservableCollection<HotProduct> HotProducts { get; }
 
-        // Commands
-        public IAsyncRelayCommand SearchCommand { get; }
         public ICommand NavigateToDetailsCommand { get; }
+        public ICommand NavigateToCategoryCommand { get; }
+
+        public ICommand NavigateToSearchCommand { get; }
 
         public HomeViewModel()
         {
@@ -37,15 +38,14 @@ namespace FoodDeliveryApp.MVVM
             Categories = new ObservableCollection<MostOrderedCategory>();
             HotProducts = new ObservableCollection<HotProduct>();
 
-            // Initialize commands
-            SearchCommand = new AsyncRelayCommand(PerformSearchAsync);
-
-            // Mock address for demonstration
-            UserAddress = "123 Main St, Cityville";
+            // Load current address
+            LoadCurrentAddressAsync();
 
             // Automatically load data
             LoadDataCommand = new AsyncRelayCommand(LoadDataAsync);
             NavigateToDetailsCommand = new AsyncRelayCommand<HotProduct>(NavigateToDetailsAsync);
+            NavigateToCategoryCommand = new Command<MostOrderedCategory>(NavigateToCategory);
+            NavigateToSearchCommand = new AsyncRelayCommand(NavigateToSearch);
         }
 
         public IAsyncRelayCommand LoadDataCommand { get; }
@@ -81,7 +81,34 @@ namespace FoodDeliveryApp.MVVM
                 IsLoading = false;
             }
         }
+        private async Task LoadCurrentAddressAsync()
+        {
+            try
+            {
+                IsLoading = true;
 
+                // Get UserId from preferences
+                var userId = Preferences.Get("UserId", 0);
+
+                if (userId == 0)
+                {
+                    throw new Exception("User ID not found.");
+                }
+
+                // Fetch the address from the API
+                UserAddress = await _apiService.GetUserAddressAsync(userId.ToString());
+                OnPropertyChanged(UserAddress);
+
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
         private async Task PerformSearchAsync()
         {
             // Implement search functionality here
@@ -90,7 +117,7 @@ namespace FoodDeliveryApp.MVVM
         }
         private async Task NavigateToDetailsAsync(HotProduct product)
         {
-            try { 
+            try {
             if (product != null)
             {
                 var navigationParameter = new Dictionary<string, object>
@@ -105,6 +132,17 @@ namespace FoodDeliveryApp.MVVM
                 Debug.WriteLine($"Error: {ex.Message}");
                 throw;
             }
+        }
+        private async void NavigateToCategory(MostOrderedCategory category)
+        {
+            if (category != null)
+            {
+                await Shell.Current.GoToAsync($"CategoryPage?categoryId={category.CategoryId}");
+            }
+        }
+        private async Task NavigateToSearch()
+        {
+                await Shell.Current.GoToAsync("SearchPage");
         }
     }
 }

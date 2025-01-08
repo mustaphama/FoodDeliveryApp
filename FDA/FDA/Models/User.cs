@@ -11,5 +11,12 @@
         public string ProfilePictureUrl { get; set; }
         public DateTime CreatedAt { get; set; }
     }
-
+    public class UpdateAddressRequest
+    {
+        public string Address { get; set; }
+    }
+    public class UpdatePhoneRequest
+    {
+        public string Phone { get; set; }
+    }
 }

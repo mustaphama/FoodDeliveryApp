@@ -1,0 +1,28 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FoodDeliveryApp.MVVM"
+             x:Class="FoodDeliveryApp.Pages.ModifyAddressPage">
+
+    <ContentPage.BindingContext>
+        <viewmodels:ModifyAddressViewModel />
+    </ContentPage.BindingContext>
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+        <HorizontalStackLayout>
+            <Label Text="Modify your Address" FontSize="20" FontAttributes="Bold" Margin="0,10,0,10"></Label>
+        </HorizontalStackLayout>
+        <!-- Address TextArea -->
+        <Editor Text="{Binding UserAddress}" 
+                Placeholder="Enter your address here"
+                AutoSize="TextChanges"
+                HeightRequest="100"
+                FontSize="14" />
+
+        <!-- Save Button -->
+        <Button Text="Save" 
+                Command="{Binding SaveCommand}" 
+                IsEnabled="{Binding IsSaveEnabled}"
+                CornerRadius="10" />
+
+    </VerticalStackLayout>
+</ContentPage>

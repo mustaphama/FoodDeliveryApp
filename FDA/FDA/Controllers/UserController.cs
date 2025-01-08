@@ -53,6 +53,76 @@ namespace FDA.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+        [HttpPut("{id}/address")]
+        public async Task<IActionResult> UpdateUserAddress(int id, [FromBody] UpdateAddressRequest request)
+        {
+            if (id <= 0 || string.IsNullOrEmpty(request.Address))
+            {
+                return BadRequest("Invalid input.");
+            }
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.Address = request.Address;
+            _context.Entry(user).Property(u => u.Address).IsModified = true;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Conflict("A concurrency error occurred while updating the address.");
+            }
+
+            return NoContent();
+        }
+        [HttpGet("getEmail/{userId}")]
+        public async Task<IActionResult> GetEmail(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            return Ok(user.Email);
+        }
+
+
+        [HttpPut("{id}/phoneNumber")]
+        public async Task<IActionResult> UpdateUserPhone(int id, [FromBody] UpdatePhoneRequest request)
+        {
+            if (id <= 0 || string.IsNullOrEmpty(request.Phone))
+            {
+                return BadRequest("Invalid input.");
+            }
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.PhoneNumber = request.Phone;
+            _context.Entry(user).Property(u => u.PhoneNumber).IsModified = true;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Conflict("A concurrency error occurred while updating the address.");
+            }
+
+            return NoContent();
+        }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
