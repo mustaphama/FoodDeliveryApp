@@ -29,7 +29,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Search Button -->
-                    <ImageButton Grid.Column="0" Source="search_icon.png" WidthRequest="40" HeightRequest="40" HorizontalOptions="Start" VerticalOptions="Center" />
+                    <ImageButton Grid.Column="0" Command="{Binding NavigateToSearchCommand}" Source="search_icon.png" WidthRequest="40" HeightRequest="40" HorizontalOptions="Start" VerticalOptions="Center" />
 
                     <!-- User Address (Center) -->
                     <VerticalStackLayout Grid.Column="1">
@@ -48,7 +48,6 @@
                 <BoxView HeightRequest="0.25" BackgroundColor="LightGray" Margin="0" />
 
                 <!-- Categories Grid -->
-                <!--Label Text="Top Categories" FontAttributes="Bold" FontSize="18" Margin="5,10,0,5" / -->
                 <CollectionView ItemsSource="{Binding Categories}" Margin="0,10,0,10">
                     <CollectionView.ItemsLayout>
                         <GridItemsLayout Orientation="Vertical" Span="4" />
@@ -56,17 +55,22 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Frame BackgroundColor="#f5f5f5" CornerRadius="10" Padding="7" Margin="5">
-                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                                <Image Source="{Binding CategoryName, Converter={StaticResource CategoryIconConverter}}" 
-                                       WidthRequest="50" 
-                                       HeightRequest="50" 
-                                       Margin="5"/>
-                                <Label Text="{Binding CategoryName}" FontSize="14" HorizontalTextAlignment="Center" />
-                            </VerticalStackLayout>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BindingContext.NavigateToCategoryCommand, Source={RelativeSource AncestorType={x:Type CollectionView}}}"
+                                          CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+                                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Image Source="{Binding CategoryName, Converter={StaticResource CategoryIconConverter}}" 
+                           WidthRequest="50" 
+                           HeightRequest="50" 
+                           Margin="5"/>
+                                    <Label Text="{Binding CategoryName}" FontSize="14" HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
                             </Frame>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
 
                 <BoxView HeightRequest="0.25" BackgroundColor="LightGray" Margin="0" />
 
@@ -83,11 +87,10 @@
                                     <!-- TapGestureRecognizer for navigation -->
                                     <TapGestureRecognizer 
                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HomeViewModel}}, Path=NavigateToDetailsCommand}" 
-                        CommandParameter="{Binding}" />
+                        CommandParameter="{Binding}"/>
                                 </Grid.GestureRecognizers>
-
                                 <Frame Padding="0" BorderColor="LightGray" CornerRadius="10" HeightRequest="150" WidthRequest="250">
-                          
+                                    
                                     <!-- Image in the top half -->
                                     <Image Source="{Binding foodItemId, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
                                     <!-- Details in the bottom half -->
@@ -95,13 +98,14 @@
                                         <!-- TapGestureRecognizer for navigation -->
                                         <TapGestureRecognizer 
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HomeViewModel}}, Path=NavigateToDetailsCommand}" 
-                                        CommandParameter="{Binding}" />
+                                        CommandParameter="{Binding}"/>
                                     </Frame.GestureRecognizers>
+                                    
                                 </Frame>
                                 <VerticalStackLayout Grid.Row="1" Padding="10,1,1,1" Margin="1" Spacing="1" VerticalOptions="Center">
                                     <Label Text="{Binding foodItemName}" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="Start" />
                                     <Label Text="4.7 ★ (120+) · 25 min" FontSize="12" HorizontalTextAlignment="Start" TextColor="DarkSlateGrey" />
-                                    <Label Text="{Binding Price}" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="Start" />
+                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="Start" />
                                 </VerticalStackLayout>
                             </Grid>
                         </DataTemplate>
@@ -132,8 +136,8 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-
             </VerticalStackLayout>
+            
         </ScrollView>
     </Grid>
 </ContentPage>

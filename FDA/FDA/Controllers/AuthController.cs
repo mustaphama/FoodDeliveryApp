@@ -136,7 +136,7 @@ namespace FDA.Controllers
             if (passwordVerificationResult != PasswordVerificationResult.Success)
             {
                 return BadRequest("Incorrect password.");
-            }
+            }           
 
             // Update the user's name
             user.Name = request.NewName;

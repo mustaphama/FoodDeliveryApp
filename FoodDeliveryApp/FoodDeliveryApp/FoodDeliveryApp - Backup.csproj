@@ -66,8 +66,16 @@
 	<ItemGroup>
 		<MauiImage Include="Resources/Images/categoryIcons/**" />
 		<MauiImage Include="Resources/Images/food_images/**" />
-		<MauiImage Include="Resources/Images/orderStatus_gifs/**" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\Images\orderStatus_gifs\cancelled.gif" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiImage Include="Resources\Images\orderStatus_gifs\cancelled.gif" />
+	</ItemGroup>
+
 	<ItemGroup>
 	  <Compile Update="Pages\CartPage.xaml.cs">
 	    <DependentUpon>CartPage.xaml</DependentUpon>

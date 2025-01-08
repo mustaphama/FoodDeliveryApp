@@ -2,6 +2,8 @@
 using FDA.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace FDA.Controllers
 {
@@ -52,6 +54,84 @@ namespace FDA.Controllers
             _context.Entry(order).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+
+        [HttpPost("PlaceOrder")]
+        public async Task<IActionResult> PlaceOrder([FromBody] CartRequest cartRequest)
+        {
+            if (cartRequest == null || !cartRequest.CartItems.Any())
+                return BadRequest("Cart is empty or invalid.");
+
+            try
+            {
+                // Find the first available delivery guy with a car
+                var deliveryGuy = await _context.DeliveryGuys
+                    .Where(dg => dg.Availability == true)
+                    .OrderBy(dg => dg.VehicleType == "Car" ? 0 : 1) // Prioritize cars
+                    .FirstOrDefaultAsync();
+
+                if (deliveryGuy == null)
+                    return StatusCode(500, "No delivery guys are currently available.");
+
+                // Create new order
+                var order = new Order
+                {
+                    UserId = cartRequest.UserId, // Retrieve from Preferences or request
+                    TotalAmount = cartRequest.CartItems.Sum(ci => ci.Price * ci.Quantity),
+                    OrderStatus = "Pending",
+                    DeliveryGuyId = deliveryGuy.Id, // Assign the selected delivery guy
+                    RestaurantId = null, // Placeholder for now
+                    PromotionCardId = null, // Placeholder for now
+                    CreatedAt = DateTime.Now,
+                    OrderDate = DateTime.Now
+                };
+
+                _context.Orders.Add(order);
+                await _context.SaveChangesAsync();
+
+                // Add OrderItems
+                foreach (var item in cartRequest.CartItems)
+                {
+                    var orderItem = new OrderItem
+                    {
+                        OrderId = order.Id,
+                        FoodItemId = item.FoodItemId,
+                        Quantity = item.Quantity,
+                        Price = item.Price
+                    };
+
+                    _context.OrderItems.Add(orderItem);
+                }
+
+                await _context.SaveChangesAsync();
+
+                // Update delivery guy's availability
+                deliveryGuy.Availability = false;
+                _context.DeliveryGuys.Update(deliveryGuy);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { Message = "Order placed successfully.", OrderId = order.Id });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        // Endpoint to get the status of an order by its ID
+        [HttpGet("{orderId}/status")]
+        public async Task<IActionResult> GetOrderStatus(int orderId)
+        {
+            var order = await _context.Orders
+                .Where(o => o.Id == orderId)
+                .Select(o => o.OrderStatus)
+                .FirstOrDefaultAsync();
+
+            if (order == null)
+            {
+                return NotFound(new { message = "Order not found" });
+            }
+
+            return Ok(order); // Return the status of the order
         }
 
         [HttpDelete("{id}")]

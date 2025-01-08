@@ -7,6 +7,7 @@ using System.Diagnostics;
 using FoodDeliveryApp.Models;
 using System.Text.Json;
 using Microsoft.Maui.ApplicationModel.Communication;
+using System.Net.Http.Json;
 
 public class ApiService
 {
@@ -454,7 +455,105 @@ public class ApiService
             return (false, "An error occurred while updating the name.");
         }
     }
+    public async Task<(bool IsSuccess, string ErrorMessage, int OrderId)> PlaceOrderAsync(CartRequest cartRequest)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/Orders/PlaceOrder", cartRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                
+                var rawResponse = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine($"Raw Response: {rawResponse}");
+                var responseData = await response.Content.ReadFromJsonAsync<OrderResponse>();
+                return (true, responseData.Message, responseData.OrderId); // Success, no error message, valid OrderId
+            }
+            else
+            {
+                var errorMessage = $"Error placing order: {response.StatusCode}";
+                Debug.WriteLine(errorMessage);
+                return (false, errorMessage, 0); // Failure, error message, invalid OrderId
+            }
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = $"Exception while placing order: {ex.Message}";
+            Debug.WriteLine(errorMessage);
+            return (false, errorMessage, 0); // Failure, error message, invalid OrderId
+        }
+    }
+    public async Task<(bool IsSuccess, string Status, string ErrorMessage)> GetOrderStatusAsync(int orderId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/orders/{orderId}/status");
 
+            if (response.IsSuccessStatusCode)
+            {
+                var orderStatus = await response.Content.ReadFromJsonAsync<string>();
+                return (true, orderStatus, string.Empty);
+            }
+            else
+            {
+                var errorMessage = $"Error fetching order status: {response.StatusCode}";
+                return (false, string.Empty, errorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            return (false, string.Empty, ex.Message);
+        }
+    }
+    public async Task<List<FoodItemDto>> GetFoodItemsByCategoryAsync(int categoryId)
+    {
+        var response = await _httpClient.GetAsync($"api/Categories/{categoryId}/food-items");
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            return System.Text.Json.JsonSerializer.Deserialize<List<FoodItemDto>>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        }
 
+        throw new Exception($"Error fetching food items: {response.ReasonPhrase}");
+    }
+    public async Task<CategoryDto> GetCategoryByIdAsync(int categoryId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/categories/{categoryId}");
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<CategoryDto>();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error fetching category: {ex.Message}");
+            return null;
+        }
+    }
+    public async Task<List<FoodItemsSearchQuery>> SearchFoodItemsAsync(string query)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/FoodItems/search?query={query}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return System.Text.Json.JsonSerializer.Deserialize<List<FoodItemsSearchQuery>>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+            throw new Exception($"{response.ReasonPhrase}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error while searching {ex.Message}");
+            return null;
+        }
+
+    }
 
 }

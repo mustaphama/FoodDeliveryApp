@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FoodDeliveryApp.MVVM"
+             x:Class="FoodDeliveryApp.Pages.DeliveryDetailsPage"
+             Title="DeliveryDetailsPage" 
+             >
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Header -->
+            <RowDefinition Height="Auto" />
+            <!-- Content -->
+            <RowDefinition Height="*" />
+            <!-- Footer -->
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0"  Text="Delivery details" FontSize="20" FontAttributes="Bold" Margin="20"></Label>
+        <VerticalStackLayout Grid.Row="1" Margin="5">
+            <Grid ColumnDefinitions="Auto, 8*, 2*" Padding="10" ColumnSpacing="10">
+                <!-- FontAwesome Icon -->
+                <Label Text="&#xf3c5;" 
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="Center"
+Grid.Column="0" />
+                <Label Text="Modify Address"
+                           FontSize="18"
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                <Label Text="&#xf054;" 
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="End"
+Grid.Column="2" />
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ModifyAddressCommand}" />
+                </Grid.GestureRecognizers>
+            </Grid>
+            <!-- Change Phone Number Row -->
+            <Grid ColumnDefinitions="Auto, 8*, 2*" Padding="10" ColumnSpacing="10">
+                <!-- FontAwesome Icon -->
+                <Label Text="&#xf3cd;" 
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="Center"
+Grid.Column="0" />
+                <Label Text="Change Phone Number"
+                           FontSize="18"
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                <Label Text="&#xf054;" 
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="End"
+Grid.Column="2" />
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ChangePhoneNumberCommand}" />
+                </Grid.GestureRecognizers>
+            </Grid>
+            <!-- Horizontal line between items -->
+            <BoxView HeightRequest="0.5" BackgroundColor="LightGray" HorizontalOptions="FillAndExpand" Margin="10"/>
+            <Label Grid.Row="0"  Text="Order Summary" FontSize="16" FontAttributes="Bold" Margin="10"></Label>
+            <VerticalStackLayout>
+                <!-- Add the list of Cart Itemes -->
+                <CollectionView ItemsSource="{Binding CartItems}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="Auto,8*,Auto" ColumnSpacing="10" Margin="10">
+                                <Label Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"  HorizontalOptions="CenterAndExpand" VerticalOptions="Center" Text="{Binding Quantity, StringFormat='x{0}'}" FontSize="16"/>
+                                <Label Grid.Row="0" Grid.Column="1"  HorizontalOptions="Start" VerticalOptions="Center" Text="{Binding Name}" FontSize="14" FontAttributes="Bold" />
+                                <Label Grid.Row="1" Grid.Column="1" HorizontalOptions="Start" VerticalOptions="Center" Text="{Binding RestaurantName}" FontSize="12" TextColor="Gray" />
+                                <Label Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalOptions="Start" VerticalOptions="Center" Text="{Binding Price, StringFormat='{0:C}'}" FontSize="14" TextColor="Green" />
+
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+            <BoxView HeightRequest="0.5" BackgroundColor="LightGray" HorizontalOptions="FillAndExpand" Margin="10"/>
+            <Grid ColumnDefinitions="Auto, 8*, 2*" Padding="10" ColumnSpacing="10">
+                <!-- FontAwesome Icon -->
+                <Label Text="&#xf02b;" 
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="Center"
+Grid.Column="0" />
+                <Label Text="Add a Coupon"
+                           FontSize="18"
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                <Label Text="&#xf054;" 
+FontFamily="FontAwesome" 
+FontSize="18"
+VerticalOptions="Center"
+HorizontalOptions="End"
+Grid.Column="2" />
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding AddCouponCommand}" />
+                </Grid.GestureRecognizers>
+            </Grid>
+        </VerticalStackLayout>
+        <Button
+            Grid.Row="2"
+ Text="Go to Payment"
+ FontSize="18"
+ CornerRadius="10"
+ BackgroundColor="{DynamicResource Primary}"
+ HeightRequest="50"
+ WidthRequest="375"
+ HorizontalOptions="Center"
+ VerticalOptions="End"
+ Command="{Binding CheckoutCommand}"
+ Margin="5,10,5,10">
+            <Button.Shadow>
+                <Shadow Brush="Gray" 
+ Offset="0,4" 
+ Radius="5" 
+ Opacity="0.5" />
+            </Button.Shadow>
+        </Button>
+    </Grid>
+</ContentPage>

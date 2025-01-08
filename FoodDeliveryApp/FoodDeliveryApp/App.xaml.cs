@@ -32,6 +32,11 @@ namespace FoodDeliveryApp
             Routing.RegisterRoute("ModifyNamePage", typeof(ModifyNamePage));
             Routing.RegisterRoute("ModifyEmailPage", typeof(ModifyEmailPage));
             Routing.RegisterRoute("ModifyPasswordPage", typeof(ModifyPasswordPage));
+            Routing.RegisterRoute("DeliveryDetailsPage", typeof(DeliveryDetailsPage));
+            Routing.RegisterRoute("OrderStatusPage", typeof(OrderStatusPage));
+            Routing.RegisterRoute("CategoryPage", typeof(CategoryPage));
+            Routing.RegisterRoute("SearchPage", typeof(SearchPage));
+
         }
         private bool IsUserLoggedIn()
         {

@@ -41,6 +41,40 @@ namespace FDA.Controllers
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
         }
 
+        [HttpGet("{categoryId}/food-items")]
+        public async Task<IActionResult> GetFoodItemsByCategory(int categoryId)
+        {
+            var foodItems = await _context.FoodItems
+                .Where(fi => fi.CategoryId == categoryId)
+                .Include(fi => fi.Menu) // Include the Menu table
+                .ThenInclude(m => m.Restaurant) // Include the Restaurant table
+                .Select(fi => new
+                {
+                    FoodItemId = fi.Id,
+                    FoodName = fi.Name,
+                    Description = fi.Description,
+                    Price = fi.Price,
+                    ImageUrl = fi.ImageUrl,
+                    IsAvailable = fi.IsAvailable,
+                    Restaurant = new
+                    {
+                        RestaurantId = fi.Menu.Restaurant.Id,
+                        RestaurantName = fi.Menu.Restaurant.Name,
+                        Location = fi.Menu.Restaurant.Location,
+                        LogoUrl = fi.Menu.Restaurant.LogoUrl
+                    }
+                })
+                .ToListAsync();
+
+            if (!foodItems.Any())
+            {
+                return NotFound(new { Message = "No food items found for the specified category." });
+            }
+
+            return Ok(foodItems);
+        }
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(int id, Category category)
         {

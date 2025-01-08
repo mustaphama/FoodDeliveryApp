@@ -28,11 +28,13 @@ namespace FoodDeliveryApp
             builder.Services.AddSingleton<ProductDetailsViewModel>();
             builder.Services.AddSingleton<CartViewModel>();
             builder.Services.AddSingleton<ProfileViewModel>();
+            builder.Services.AddSingleton<DeliveryDetailsViewModel>();
 
             // Register Pages with DI
             builder.Services.AddSingleton<CartPage>();
             builder.Services.AddSingleton<ProductDetailsPage>();
             builder.Services.AddSingleton<ProfilePage>();
+            builder.Services.AddSingleton<DeliveryDetailsPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

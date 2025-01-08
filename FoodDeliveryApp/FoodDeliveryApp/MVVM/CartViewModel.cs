@@ -18,20 +18,27 @@ namespace FoodDeliveryApp.MVVM
         public ObservableCollection<FoodItemWithRestaurantDto> CartItems { get; set; } = new();
         public decimal TotalPrice => CartItems.Sum(item => item.Price * item.Quantity);
         public ICommand NavigateToDetailsCommand { get; }
+        public ICommand CheckoutCommand { get; }
 
-        // Constructor without DI for ApiService
+        // Constructor with DI for Cart Service
         public CartViewModel(CartService cartService)
         {
                 _cartService = cartService;
-                _apiService = new ApiService(); // Directly instantiate ApiService here
+                _apiService = new ApiService();
                 LoadCartCommand = new Command(async () => await LoadCartItems());
                 NavigateToDetailsCommand = new AsyncRelayCommand<FoodItemWithRestaurantDto>(NavigateToDetailsAsync);
+                CheckoutCommand = new AsyncRelayCommand(CheckoutAsync);
         }
 
         public ICommand LoadCartCommand { get; }
 
         private async Task LoadCartItems()
         {
+            var OrderId = Preferences.Get("CurrentOrderId", 0);
+            if (OrderId != 0)
+            {
+                await Shell.Current.GoToAsync("OrderStatusPage");
+            }
             var cart = _cartService.GetCartItems();
 
             // Extract food item IDs from the cart
@@ -105,6 +112,11 @@ namespace FoodDeliveryApp.MVVM
                 App.Current.MainPage.ShowPopup(popup);
             }
         });
+        private async Task CheckoutAsync()
+        {
+            // Navigate to the checkout page
+            await Shell.Current.GoToAsync("DeliveryDetailsPage");
+        }
         private async Task NavigateToDetailsAsync(FoodItemWithRestaurantDto product)
         {
             try
