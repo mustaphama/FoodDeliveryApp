@@ -30,8 +30,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\fda_iconfg.svg" Color="#f5835e" />
-
+		<MauiIcon Include="Resources\AppIcon\fda_icon.svg" ForegroundFile="Resources\AppIcon\fda_iconfg.svg" Color="#f5835e" ForegroundScale="0.8"/>
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#f5835e" BaseSize="128,128" />
 
@@ -66,6 +65,7 @@
 	<ItemGroup>
 		<MauiImage Include="Resources/Images/categoryIcons/**" />
 		<MauiImage Include="Resources/Images/food_images/**" />
+		<MauiImage Include="Resources/Images/restaurant_logos/**" />
 		<MauiImage Include="Resources/Images/orderStatus_gifs/**" />
 	</ItemGroup>
 	<ItemGroup>

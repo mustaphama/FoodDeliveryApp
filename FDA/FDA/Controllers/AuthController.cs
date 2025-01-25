@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using FDA.Data;
+using System.Diagnostics;
 
 namespace FDA.Controllers
 {
@@ -42,7 +43,8 @@ namespace FDA.Controllers
                 PasswordHash = hashedPassword,
                 PhoneNumber = request.PhoneNumber,
                 Address = request.Address,
-                ProfilePictureUrl = request.ProfilePictureUrl,
+                City = request.City,  // Include user's city
+                Country = request.Country,  // Include user's country
                 CreatedAt = DateTime.Now
             };
 
@@ -52,6 +54,7 @@ namespace FDA.Controllers
 
             return Ok(new { message = "User registered successfully!" });
         }
+
 
         // POST: api/auth/login
         [HttpPost("login")]
@@ -71,18 +74,18 @@ namespace FDA.Controllers
                 return Unauthorized(new { message = "Invalid email or password!" });
             }
 
-            // Return the UserId to the client upon successful login
+            // Return the Id_Users to the client upon successful login
             return Ok(new
             {
                 message = "Login successful!",
-                userId = user.Id // Add userId in the response
+                Id_Users = user.Id // Add Id_Users in the response
             });
         }
         [HttpPut("modifyPassword")]
         public async Task<IActionResult> ModifyPassword([FromBody] ModifyPasswordRequest request)
         {
             // Validate the user's old password
-            var user = await _context.Users.FindAsync(request.UserId);
+            var user = await _context.Users.FindAsync(request.Id_Users);
             if (user == null) return NotFound("User not found.");
 
             var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(null, user.PasswordHash, request.OldPassword);
@@ -102,7 +105,7 @@ namespace FDA.Controllers
         public async Task<IActionResult> ModifyEmail([FromBody] ModifyEmailRequest request)
         {
             // Validate the user's password
-            var user = await _context.Users.FindAsync(request.UserId);
+            var user = await _context.Users.FindAsync(request.Id_Users);
             if (user == null) return NotFound("User not found.");
 
             var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(null, user.PasswordHash, request.Password);
@@ -129,7 +132,7 @@ namespace FDA.Controllers
         public async Task<IActionResult> ModifyName([FromBody] ModifyNameRequest request)
         {
             // Validate the user's password
-            var user = await _context.Users.FindAsync(request.UserId);
+            var user = await _context.Users.FindAsync(request.Id_Users);
             if (user == null) return NotFound("User not found.");
 
             var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(null, user.PasswordHash, request.Password);

@@ -11,8 +11,8 @@
 
     <Shell.Behaviors>
         <toolkit:StatusBarBehavior 
-            StatusBarStyle="DarkContent" 
-            StatusBarColor="{StaticResource Secondary}" />
+            StatusBarStyle="{AppThemeBinding Light=DarkContent, Dark=LightContent}" 
+            StatusBarColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource OffBlack}}" />
     </Shell.Behaviors>
 
     <!-- Non-tab pages -->

@@ -19,7 +19,7 @@ public class CartService
 
     public void AddOrUpdateCartItem(int foodItemId, int quantity, decimal price)
     {
-        var existingItem = _cartItems.FirstOrDefault(item => item.FoodItemId == foodItemId);
+        var existingItem = _cartItems.FirstOrDefault(item => item.Id_FoodItems == foodItemId);
 
         if (existingItem != null)
         {
@@ -29,7 +29,7 @@ public class CartService
         {
             _cartItems.Add(new CartItem
             {
-                FoodItemId = foodItemId,
+                Id_FoodItems = foodItemId,
                 Quantity = quantity,
                 Price = price
             });
@@ -38,7 +38,7 @@ public class CartService
     }
     public void RemoveCartItem(int foodItemId)
     {
-        var itemToRemove = _cartItems.FirstOrDefault(c => c.FoodItemId == foodItemId);
+        var itemToRemove = _cartItems.FirstOrDefault(c => c.Id_FoodItems == foodItemId);
         if (itemToRemove != null)
         {
             _cartItems.Remove(itemToRemove);

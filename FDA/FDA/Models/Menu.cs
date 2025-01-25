@@ -3,9 +3,8 @@
     public class Menu
     {
         public int Id { get; set; }
-        public int RestaurantId { get; set; }
-        public string MenuName { get; set; }
-        public string MenuImageUrl { get; set; }
+        public int Id_Restaurants { get; set; }
+        public string Name { get; set; }
         public DateTime CreatedAt { get; set; }
 
         // Navigation Property

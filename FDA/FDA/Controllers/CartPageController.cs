@@ -32,10 +32,9 @@ namespace FDA.Controllers
                     Name = fi.Name,
                     Description = fi.Description,
                     Price = fi.Price,
-                    ImageUrl = fi.ImageUrl,
-                    RestaurantId = fi.Menu.Restaurant.Id, // Include RestaurantId
+                    Id_Restaurants = fi.Menu.Restaurant.Id, // Include Id_Restaurants
                     RestaurantName = fi.Menu.Restaurant.Name,
-                    RestaurantLocation = fi.Menu.Restaurant.Location
+                    RestaurantAddress = fi.Menu.Restaurant.Address
                 })
                 .ToListAsync();
 

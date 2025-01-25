@@ -23,12 +23,18 @@ namespace FoodDeliveryApp.MVVM
             LoadCartCommand = new Command(async () => await LoadCartItems());
 
         }
+        [ObservableProperty]
+        private decimal _totalPrice = 0;
+        [ObservableProperty]
+        private decimal _deliveryFee = 0;
+        [ObservableProperty]
+        private decimal _total = 0;
         private async Task LoadCartItems()
         {
             var cart = _cartService.GetCartItems();
 
             // Extract food item IDs from the cart
-            var foodItemIds = cart.Select(item => item.FoodItemId).ToList();
+            var foodItemIds = cart.Select(item => item.Id_FoodItems).ToList();
 
             if (foodItemIds.Count > 0)
             {
@@ -38,7 +44,7 @@ namespace FoodDeliveryApp.MVVM
                 // Map quantities to the retrieved items
                 foreach (var item in foodItems)
                 {
-                    var cartItem = cart.FirstOrDefault(c => c.FoodItemId == item.Id);
+                    var cartItem = cart.FirstOrDefault(c => c.Id_FoodItems == item.Id);
                     if (cartItem != null)
                     {
                         item.Quantity = cartItem.Quantity;
@@ -46,6 +52,12 @@ namespace FoodDeliveryApp.MVVM
                     }
                     Debug.WriteLine($"CartItems name: {item.Name}");
                 }
+                TotalPrice = cart.Sum(item => item.Price * item.Quantity);
+
+                // Calculate delivery fee based on total price and quantity (customize the logic as needed)
+                DeliveryFee = CalculateDeliveryFee(TotalPrice, cart.Sum(item => item.Quantity));
+
+                Total = TotalPrice + DeliveryFee;
 
                 // Update the observable collection
                 CartItems.Clear();
@@ -57,6 +69,18 @@ namespace FoodDeliveryApp.MVVM
                 // Notify UI to refresh bindings
                 OnPropertyChanged(nameof(CartItems));
             }
+        }
+        private decimal CalculateDeliveryFee(decimal totalPrice, int totalQuantity)
+        {
+            // Example logic: Delivery fee is 5% of the total price + $2 per item
+            decimal deliveryFeePercentage = 0.05m;
+            decimal feePerItem = 1m;
+
+            decimal feeBasedOnPrice = totalPrice * deliveryFeePercentage;
+            decimal feeBasedOnQuantity = feePerItem * totalQuantity;
+
+            // You can adjust this logic based on your business rules
+            return feeBasedOnPrice + feeBasedOnQuantity;
         }
         // Command to modify the delivery address
         [RelayCommand]
@@ -95,10 +119,10 @@ namespace FoodDeliveryApp.MVVM
             // Create the order request
             var cartRequest = new CartRequest
             {
-                UserId = Preferences.Get("UserId", 0), // Replace with your user preference key
+                Id_Users = Preferences.Get("UserId", 0), // Replace with your user preference key
                 CartItems = CartItems.Select(item => new CartItem
                 {
-                    FoodItemId = item.Id,
+                    Id_FoodItems = item.Id,
                     Quantity = item.Quantity,
                     Price = item.Price
                 }).ToList()
@@ -111,7 +135,7 @@ namespace FoodDeliveryApp.MVVM
             {
                 Debug.WriteLine($"Order placed successfully! Order ID: {orderId}");
 
-                // Save the OrderId in preferences
+                // Save the Id_Orders in preferences
                 Preferences.Set("CurrentOrderId", orderId);
 
                 // Navigate to a confirmation page or clear the cart

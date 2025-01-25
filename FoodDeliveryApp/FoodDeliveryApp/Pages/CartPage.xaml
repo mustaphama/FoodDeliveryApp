@@ -111,8 +111,7 @@ CommandParameter="{Binding}" />
                 FontSize="20"
                 BackgroundColor="Transparent"
                 TextColor="Black"
-                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CartViewModel}}, Path=IncreaseQuantityCommand}" 
-                                                    CommandParameter="{Binding}"
+                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CartViewModel}}, Path=IncreaseQuantityCommand}" CommandParameter="{Binding}"
                 >
                                                     <Button.Triggers>
                                                         <Trigger TargetType="Button" Property="IsPressed" Value="True">
@@ -143,7 +142,7 @@ CommandParameter="{Binding}" />
          Text="Checkout"
          FontSize="18"
          CornerRadius="10"
-         BackgroundColor="{DynamicResource PrimaryDarkText}"
+         BackgroundColor="{AppThemeBinding Light=Black,Dark=White}"
          HeightRequest="50"
          WidthRequest="375"
          HorizontalOptions="Center"

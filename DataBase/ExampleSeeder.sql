@@ -29,14 +29,60 @@ VALUES
 (3, 'Sushi Rolls', 'https://example.com/images/menus/sushirolls.jpg');
 
 -- Insert into Food Items Table
-INSERT INTO FoodItems (MenuId, CategoryId, Name, Description, Price, ImageUrl)
+INSERT INTO FoodItems (Ratings, NumOfReviews, Name, Description, Price, IsAvailable, CreatedAt, Id_Categories, Id_Menus)
 VALUES 
-(1, 4, 'Margherita Pizza', 'Classic margherita pizza with mozzarella cheese and tomato sauce', 12.99, 'https://example.com/images/fooditems/margherita.jpg'),
-(1, 4, 'Pepperoni Pizza', 'Spicy pepperoni pizza with mozzarella cheese and tomato sauce', 14.99, 'https://example.com/images/fooditems/pepperoni.jpg'),
-(2, 1, 'Cheeseburger', 'Juicy cheeseburger with lettuce, tomato, and pickles', 9.99, 'https://example.com/images/fooditems/cheeseburger.jpg'),
-(2, 1, 'Bacon Burger', 'Crispy bacon burger with melted cheddar and BBQ sauce', 11.99, 'https://example.com/images/fooditems/baconburger.jpg'),
-(3, 5, 'California Roll', 'Fresh sushi roll with crab, avocado, and cucumber', 8.99, 'https://example.com/images/fooditems/californiaroll.jpg'),
-(3, 5, 'Spicy Tuna Roll', 'Spicy tuna roll with cucumber and sesame seeds', 10.99, 'https://example.com/images/fooditems/spicytuna.jpg');
+(4.8, 180, 'Margherita Pizza', 'Classic margherita pizza with mozzarella cheese and tomato sauce', 12.99, TRUE, NOW(), 4, 9),
+(4.7, 170, 'Pepperoni Pizza', 'Spicy pepperoni pizza with mozzarella cheese and tomato sauce', 14.99, TRUE, NOW(), 4, 9),
+(4.6, 150, 'Cheeseburger', 'Juicy cheeseburger with lettuce, tomato, and pickles', 9.99, TRUE, NOW(), 3, 10),
+(4.5, 140, 'Bacon Burger', 'Crispy bacon burger with melted cheddar and BBQ sauce', 11.99, TRUE, NOW(), 3, 10),
+(4.9, 200, 'California Roll', 'Fresh sushi roll with crab, avocado, and cucumber', 8.99, TRUE, NOW(), 5, 11),
+(4.8, 180, 'Spicy Tuna Roll', 'Spicy tuna roll with cucumber and sesame seeds', 10.99, TRUE, NOW(), 5, 11),
+-- Chinese
+(4.7, 120, 'Kung Pao Chicken', 'Stir-fried chicken with peanuts, chili peppers, and vegetables.', 12.99, TRUE, NOW(), 1, 9),
+(4.5, 90, 'Sweet and Sour Pork', 'Pork in a tangy sweet and sour sauce.', 10.99, TRUE, NOW(), 1, 9),
+(4.8, 150, 'Spring Rolls', 'Crispy rolls stuffed with vegetables.', 5.99, TRUE, NOW(), 1, 9),
+(4.6, 110, 'Beef Chow Mein', 'Noodles stir-fried with beef and vegetables.', 11.99, TRUE, NOW(), 1, 9),
+(4.4, 75, 'Mapo Tofu', 'Spicy tofu with minced pork and chili sauce.', 9.99, TRUE, NOW(), 1, 9),
+
+-- Dessert
+(4.9, 200, 'Chocolate Lava Cake', 'Rich chocolate cake with molten center.', 7.99, TRUE, NOW(), 2, 10),
+(4.8, 180, 'Cheesecake', 'Creamy cheesecake with a graham cracker crust.', 6.99, TRUE, NOW(), 2, 10),
+(4.7, 160, 'Tiramisu', 'Classic Italian dessert with coffee and mascarpone.', 8.99, TRUE, NOW(), 2, 10),
+(4.6, 140, 'Macarons', 'Colorful almond meringue cookies.', 9.99, TRUE, NOW(), 2, 10),
+(4.5, 100, 'Fruit Tart', 'Tart with creamy custard and fresh fruits.', 7.99, TRUE, NOW(), 2, 10),
+
+-- Fast Food
+(4.3, 90, 'Double Cheeseburger', 'Beef burger with double cheese.', 8.99, TRUE, NOW(), 3, 11),
+(4.4, 85, 'Chicken Nuggets', 'Crispy chicken nuggets.', 6.99, TRUE, NOW(), 3, 11),
+(4.5, 100, 'Fries', 'Crispy golden fries.', 2.99, TRUE, NOW(), 3, 11),
+(4.2, 70, 'Onion Rings', 'Crispy battered onion rings.', 3.99, TRUE, NOW(), 3, 11),
+(4.1, 50, 'Hot Dog', 'Grilled sausage in a bun.', 5.99, TRUE, NOW(), 3, 11),
+
+-- Italian
+(4.8, 160, 'Fettuccine Alfredo', 'Pasta in a creamy Alfredo sauce.', 12.99, TRUE, NOW(), 4, 12),
+(4.7, 140, 'Lasagna', 'Layers of pasta, meat, and cheese.', 13.99, TRUE, NOW(), 4, 12),
+(4.6, 130, 'Margherita Pizza', 'Classic pizza with tomato and mozzarella.', 11.99, TRUE, NOW(), 4, 12),
+(4.5, 120, 'Penne Arrabiata', 'Pasta with spicy tomato sauce.', 10.99, TRUE, NOW(), 4, 12),
+(4.4, 100, 'Bruschetta', 'Grilled bread with tomato topping.', 6.99, TRUE, NOW(), 4, 12),
+
+-- Japanese
+(4.9, 180, 'California Roll', 'Sushi roll with crab and avocado.', 8.99, TRUE, NOW(), 5, 13),
+(4.8, 170, 'Spicy Tuna Roll', 'Sushi roll with spicy tuna.', 10.99, TRUE, NOW(), 5, 13),
+(4.7, 160, 'Ramen', 'Noodle soup with pork and egg.', 12.99, TRUE, NOW(), 5, 13),
+(4.6, 150, 'Tempura', 'Crispy battered seafood or vegetables.', 9.99, TRUE, NOW(), 5, 13),
+(4.5, 140, 'Miso Soup', 'Soup with tofu and seaweed.', 3.99, TRUE, NOW(), 5, 13),
+
+-- Snack
+(4.3, 100, 'Chips', 'Crispy potato chips.', 1.99, TRUE, NOW(), 6, 11),
+(4.4, 95, 'Nachos', 'Tortilla chips with cheese and toppings.', 6.99, TRUE, NOW(), 6, 11),
+
+-- Spicy
+(4.7, 120, 'Spicy Chicken Wings', 'Crispy wings with spicy sauce.', 9.99, TRUE, NOW(), 7, 14),
+
+-- Vegan
+(4.9, 150, 'Vegan Burger', 'Plant-based burger.', 10.99, TRUE, NOW(), 8, 15),
+(4.8, 130, 'Vegan Salad', 'Salad with fresh greens and nuts.', 8.99, TRUE, NOW(), 8, 15);
+
 
 -- Insert into Delivery Guys Table
 INSERT INTO DeliveryGuys (Name, PhoneNumber, Email, VehicleType)

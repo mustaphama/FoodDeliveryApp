@@ -81,10 +81,10 @@ namespace FDA.Controllers
 
             return NoContent();
         }
-        [HttpGet("getEmail/{userId}")]
-        public async Task<IActionResult> GetEmail(int userId)
+        [HttpGet("getEmail/{Id_Users}")]
+        public async Task<IActionResult> GetEmail(int Id_Users)
         {
-            var user = await _context.Users.FindAsync(userId);
+            var user = await _context.Users.FindAsync(Id_Users);
             if (user == null)
             {
                 return NotFound("User not found.");

@@ -89,13 +89,13 @@ CREATE TABLE OrderItems (
     OrderId INT FOREIGN KEY REFERENCES Orders(Id),
     FoodItemId INT FOREIGN KEY REFERENCES FoodItems(Id),
     Quantity INT,
+    PaymentsId INT FOREIGN KEY REFERENCES Payments(Id),
     Price DECIMAL(10, 2)
 );
 
 -- Payments Table
 CREATE TABLE Payments (
     Id INT PRIMARY KEY IDENTITY(1,1),
-    OrderId INT FOREIGN KEY REFERENCES Orders(Id),
     PaymentMethod NVARCHAR(50),
     PaymentStatus NVARCHAR(50),
     PaymentDate DATETIME DEFAULT GETDATE()

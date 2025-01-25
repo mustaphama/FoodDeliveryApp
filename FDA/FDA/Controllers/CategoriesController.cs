@@ -41,38 +41,100 @@ namespace FDA.Controllers
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
         }
 
-        [HttpGet("{categoryId}/food-items")]
-        public async Task<IActionResult> GetFoodItemsByCategory(int categoryId)
+        //[HttpGet("{Id_Categories}/food-items")]
+        //public async Task<IActionResult> GetFoodItemsByCategory(int Id_Categories)
+        //{
+        //    var foodItems = await _context.FoodItems
+        //        .Where(fi => fi.Id_Categories == Id_Categories)
+        //        .Include(fi => fi.Menu) // Include the Menu table
+        //        .ThenInclude(m => m.Restaurant) // Include the Restaurant table
+        //        .Select(fi => new
+        //        {
+        //            Id_FoodItems = fi.Id,
+        //            FoodName = fi.Name,
+        //            Description = fi.Description,
+        //            Price = fi.Price,
+        //            IsAvailable = fi.IsAvailable,
+        //            Ratings = fi.Ratings,
+        //            NumOfReviews = fi.NumOfReviews,
+        //            Restaurant = new
+        //            {
+        //                Id_Restaurants = fi.Menu.Restaurant.Id,
+        //                RestaurantName = fi.Menu.Restaurant.Name,
+        //                Address = fi.Menu.Restaurant.Address,
+        //            }
+        //        })
+        //        .ToListAsync();
+
+        //    if (!foodItems.Any())
+        //    {
+        //        return NotFound(new { Message = "No food items found for the specified category." });
+        //    }
+
+        //    return Ok(foodItems);
+        //}
+
+        [HttpGet("{Id_Categories}/food-items")]
+        public async Task<IActionResult> GetFoodItemsByCategory(int Id_Categories, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 8)
         {
-            var foodItems = await _context.FoodItems
-                .Where(fi => fi.CategoryId == categoryId)
+            if (pageNumber < 1 || pageSize < 1)
+            {
+                return BadRequest(new { Message = "Page number and page size must be greater than 0." });
+            }
+
+            var query = _context.FoodItems
+                .Where(fi => fi.Id_Categories == Id_Categories)
                 .Include(fi => fi.Menu) // Include the Menu table
                 .ThenInclude(m => m.Restaurant) // Include the Restaurant table
                 .Select(fi => new
                 {
-                    FoodItemId = fi.Id,
-                    FoodName = fi.Name,
+                    Id = fi.Id,
+                    Name = fi.Name,
                     Description = fi.Description,
                     Price = fi.Price,
-                    ImageUrl = fi.ImageUrl,
                     IsAvailable = fi.IsAvailable,
+                    Ratings = fi.Ratings,
+                    NumOfReviews = fi.NumOfReviews,
                     Restaurant = new
                     {
-                        RestaurantId = fi.Menu.Restaurant.Id,
-                        RestaurantName = fi.Menu.Restaurant.Name,
-                        Location = fi.Menu.Restaurant.Location,
-                        LogoUrl = fi.Menu.Restaurant.LogoUrl
+                        Id= fi.Menu.Restaurant.Id,
+                        Name = fi.Menu.Restaurant.Name,
+                        Address = fi.Menu.Restaurant.Address,
                     }
-                })
+                });
+
+            // Apply pagination
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (pageNumber > totalPages && totalPages > 0)
+            {
+                return NotFound(new { Message = "Page number exceeds total pages available." });
+            }
+
+            var foodItems = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            // Return paginated response
+            var response = new
+            {
+                TotalItems = totalItems,
+                TotalPages = totalPages,
+                CurrentPage = pageNumber,
+                PageSize = pageSize,
+                Items = foodItems
+            };
 
             if (!foodItems.Any())
             {
                 return NotFound(new { Message = "No food items found for the specified category." });
             }
 
-            return Ok(foodItems);
+            return Ok(response);
         }
+
 
 
         [HttpPut("{id}")]

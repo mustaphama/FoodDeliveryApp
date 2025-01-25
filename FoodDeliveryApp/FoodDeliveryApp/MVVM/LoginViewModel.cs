@@ -16,12 +16,18 @@ public partial class LoginViewModel : ObservableObject
     [ObservableProperty]
     private string message;  // Property to bind to the Label in XAML
 
+    [ObservableProperty]
+    private string _messageColor = "#FF0000"; // Default color is red
+    [ObservableProperty]
+    private bool _messageVisibility;
+
     public IAsyncRelayCommand LoginCommand { get; }
 
     public LoginViewModel()
     {
         _apiService = new ApiService();
         LoginCommand = new AsyncRelayCommand(LoginUserAsync);
+        MessageVisibility = false;
     }
 
     // Async method to call the API service for logging in
@@ -31,15 +37,16 @@ public partial class LoginViewModel : ObservableObject
 
         if (response.IsSuccess)
         {
-            // Store the UserId in Preferences
-            if (response.UserId > 0)
+            // Store the Id_Users in Preferences
+            if (response.Id_Users > 0)
             {
                 // Set login status
                 Preferences.Set("IsLoggedIn", true);
-                Preferences.Set("UserId", response.UserId);
+                Preferences.Set("UserId", response.Id_Users);
             }
-
+            MessageVisibility = true;
             Message = "Login successful!";
+            MessageColor = "#00FF00"; // Change color to green
 
             // Show the MainTabBar and navigate to HomePage
             Shell.Current.FindByName<TabBar>("MainTabBar").IsVisible = true;
@@ -47,8 +54,15 @@ public partial class LoginViewModel : ObservableObject
         }
         else
         {
+            MessageVisibility = true;
             Message = response.ErrorMessage ?? "Login failed.";
+            MessageColor = "#FF0000"; // Change color to red
         }
+    }
+    [RelayCommand]
+    private async Task NavigateBack()
+    {
+        await Shell.Current.GoToAsync("..", true);
     }
 
 

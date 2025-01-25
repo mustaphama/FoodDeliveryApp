@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FoodDeliveryApp.Pages.RestaurantPage"
+             xmlns:viewmodels="clr-namespace:FoodDeliveryApp.MVVM"
+             xmlns:converters="clr-namespace:FoodDeliveryApp.Resources.Converters"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             Title="RestaurantPage">
+    <ContentPage.BindingContext>
+        <viewmodels:RestaurantViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:ImageUrlFromIdConverter x:Key="ImageUrlFromIdConverter" />
+            <converters:ImageUrlFromRestaurantIdConverter x:Key="ImageUrlFromRestaurantIdConverter" />
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ScrollView>
+        <StackLayout>
+            <Frame Padding="0" BorderColor="Transparent" CornerRadius="0" HeightRequest="300">
+                <Grid RowDefinitions="2*,*">
+                    <!-- Image in the top half -->
+                    <Image Grid.Row="0" Grid.RowSpan="2" Source="{Binding IdFirstItem, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Start" HeightRequest="200"/>
+                    <Button Grid.Row="0" Text="&#xf053;" FontFamily="FontAwesome" FontSize="20" Command="{Binding NavigateBackCommand}" FontAttributes="Bold" Margin="10,0,0,0" VerticalOptions="Start" HorizontalOptions="Start" BackgroundColor="Transparent" TextColor="Black"/>
+                    <Border Stroke="{StaticResource OffBlack}"
+        StrokeThickness="1"
+        Background="Transparent" Padding="0" WidthRequest="125" HeightRequest="125" VerticalOptions="End" BackgroundColor="Transparent" Margin="0,0,0,-50">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="125"/>
+                        </Border.StrokeShape>
+                        <Image Grid.Row="1" Grid.RowSpan="2" Source="{Binding Restaurant.Id, Converter={StaticResource ImageUrlFromRestaurantIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                    </Border>
+                    
+
+                </Grid>
+            </Frame>
+            <!-- Restaurant Details -->
+            <Frame Padding="10" Margin="10,-50,10,0" BorderColor="Transparent" HorizontalOptions="Center">
+                <StackLayout>
+                    <Label Text="{Binding Restaurant.Name}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="{Binding Restaurant.Address}" FontSize="16" HorizontalOptions="Center" TextColor="Gray" FontAttributes="Italic" VerticalOptions="Start"/>
+                </StackLayout>
+            </Frame>
+            <BoxView HeightRequest="0.25" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}" Margin="10" />
+            <!-- Menus and Food Items -->
+            <CollectionView  ItemsSource="{Binding Menus}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Padding="10">
+                            <!-- Menu Details -->
+                            <Frame Margin="10,0,10,0" Padding="0" BorderColor="Transparent">
+                                <StackLayout>
+                                    <Label Text="{Binding Name}" FontSize="20" FontAttributes="Bold" />
+                                </StackLayout>
+                            </Frame>
+
+                            <!-- Food Items for the Menu -->
+                            <CollectionView ItemsSource="{Binding FoodItems}" Margin="0,0,0,10">
+                                <CollectionView.ItemsLayout>
+                                    <GridItemsLayout Orientation="Horizontal" Span="1" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid RowDefinitions="3*,*" ColumnDefinitions="*" Padding ="5">
+                                            <Grid.GestureRecognizers>
+                                                <!-- TapGestureRecognizer for navigation -->
+                                                <TapGestureRecognizer 
+        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:RestaurantViewModel}}, Path=NavigateToDetailsCommand}" 
+        CommandParameter="{Binding}"/>
+                                            </Grid.GestureRecognizers>
+                                            <Border Stroke="{StaticResource OffBlack}"
+        StrokeThickness="0.3"
+        Background="Transparent" Padding="0"  HeightRequest="150" WidthRequest="250" >
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="10"/>
+                                                </Border.StrokeShape>
+                                                <!-- Image in the top half -->
+                                                <Image Source="{Binding Id, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                                                <!-- Details in the bottom half -->
+                                                <Border.GestureRecognizers>
+                                                    <!-- TapGestureRecognizer for navigation -->
+                                                    <TapGestureRecognizer 
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:RestaurantViewModel}}, Path=NavigateToDetailsCommand}" 
+                        CommandParameter="{Binding}"/>
+                                                </Border.GestureRecognizers>
+
+                                            </Border>
+                                            <VerticalStackLayout Grid.Row="1" Padding="10,1,1,1" Margin="1" Spacing="1" VerticalOptions="Center">
+                                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="Start" />
+                                                <Label FontSize="12" HorizontalTextAlignment="Start" TextColor="{AppThemeBinding Light=DarkSlateGrey, Dark=DarkGray}">
+                                                    <Label.Text>
+                                                        <MultiBinding StringFormat="{}{0} ★ ({1}+) · 25 min">
+                                                            <Binding Path="Ratings" />
+                                                            <Binding Path="NumOfReviews" />
+                                                        </MultiBinding>
+                                                    </Label.Text>
+                                                </Label>
+                                                <Label Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="Start" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <BoxView HeightRequest="0.25" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}" Margin="10" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            
+            <Label Text="Contact Informations" FontSize="18" FontAttributes="Bold" HorizontalOptions="Start" Margin="10" />
+            <HorizontalStackLayout Margin="10" Spacing="10">
+                <Label Text="&#xf095;" FontFamily="FontAwesome" FontSize="20" VerticalOptions="Center"/>
+                <Label Text="{Binding Restaurant.PhoneNumber}" FontSize="16" VerticalOptions="Center" Margin="0,0,20,0"/>
+                <Label Text="&#xf0e0;" FontFamily="FontAwesome" FontSize="20" VerticalOptions="Center"/>
+                <Label Text="{Binding Restaurant.Email}" FontSize="16" VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

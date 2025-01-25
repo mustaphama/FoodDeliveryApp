@@ -28,8 +28,8 @@
             <Button Text="&#xf053;" FontFamily="FontAwesome" FontSize="16" Command="{Binding NavigateBackCommand}" FontAttributes="Bold" Margin="10,0,0,0" BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
             <Label  Text="{Binding CategoryName}" FontSize="20" FontAttributes="Bold" Margin="20"></Label>
         </HorizontalStackLayout>
-        <VerticalStackLayout Grid.Row="1">
-            <CollectionView ItemsSource="{Binding FoodItems}" Margin="0,0,0,10">
+        <ScrollView Grid.Row="1">
+            <CollectionView ItemsSource="{Binding FoodItems}" Margin="0,0,0,10" RemainingItemsThreshold="5" RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
                 <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid RowDefinitions="3*,*" ColumnDefinitions="*" Padding ="5">
@@ -39,29 +39,40 @@
         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CategoryViewModel}}, Path=NavigateToDetailsCommand}" 
         CommandParameter="{Binding}"/>
                         </Grid.GestureRecognizers>
-                        <Frame Padding="0" BorderColor="LightGray" CornerRadius="15" HeightRequest="190" Margin="10,0,10,0">
-
-                            <!-- Image in the top half -->
-                            <Image Source="{Binding FoodItemId, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                            <Border Stroke="{StaticResource OffBlack}"
+StrokeThickness="0.3"
+Background="Transparent" Padding="0" HeightRequest="190" Margin="10,0,10,0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="15"/>
+                                </Border.StrokeShape>
+                                <!-- Image in the top half -->
+                            <Image Source="{Binding Id, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
                             <!-- Details in the bottom half -->
-                            <Frame.GestureRecognizers>
+                            <Border.GestureRecognizers>
                                 <!-- TapGestureRecognizer for navigation -->
                                 <TapGestureRecognizer 
                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CategoryViewModel}}, Path=NavigateToDetailsCommand}" 
                         CommandParameter="{Binding}"/>
-                            </Frame.GestureRecognizers>
+                            </Border.GestureRecognizers>
 
-                        </Frame>
+                        </Border>
                         <Grid Grid.Row="1" RowDefinitions="*,*" ColumnDefinitions="*,*" Padding="10,1,1,1" Margin="1" VerticalOptions="Center">
-                            <Label Grid.Row="0" Grid.Column="0" Padding="10,0,0,0"  Text="{Binding FoodName}" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="Start" />
-                                <Label Grid.Row="1" Grid.Column="0" Padding="10,0,0,0" Text="{Binding Restaurant.RestaurantName}" FontSize="14" HorizontalTextAlignment="Start" TextColor="DarkSlateGrey"/>
-                                <Label Grid.Row="1" Grid.Column="1"  Text="4.7 ★ (120+) · 25 min" FontSize="12" HorizontalTextAlignment="Center" TextColor="DarkSlateGrey" />
+                            <Label Grid.Row="0" Grid.Column="0" Padding="10,0,0,0"  Text="{Binding Name}" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="Start" />
+                                <Label Grid.Row="1" Grid.Column="0" Padding="10,0,0,0" Text="{Binding Restaurant.Name}" FontSize="14" HorizontalTextAlignment="Start" TextColor="DarkSlateGrey"/>
+                                <Label Grid.Row="1" Grid.Column="1" FontSize="12" HorizontalTextAlignment="Center" TextColor="DarkSlateGrey">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0} ★ ({1}+) · 25 min">
+                                            <Binding Path="Ratings" />
+                                            <Binding Path="NumOfReviews" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
                                 <Label Grid.Row="0" Grid.Column="1"  Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="16" TextColor="Green" HorizontalTextAlignment="Center" />
                         </Grid>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </VerticalStackLayout>
+    </ScrollView>
         </Grid>
 </ContentPage>

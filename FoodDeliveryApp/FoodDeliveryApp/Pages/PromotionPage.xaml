@@ -2,11 +2,81 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FoodDeliveryApp.Pages.PromotionPage"
+             xmlns:viewmodels="clr-namespace:FoodDeliveryApp.MVVM"
+             xmlns:converters="clr-namespace:FoodDeliveryApp.Resources.Converters"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              Title="PromotionPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <ContentPage.BindingContext>
+        <viewmodels:PromotionViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:DiscountTypeConverter x:Key="DiscountTypeConverter" />
+            <converters:BoolToUsedTextConverter x:Key="BoolToUsedTextConverter" />
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Header -->
+            <RowDefinition Height="Auto" />
+            <!-- Content -->
+            <RowDefinition Height="*" />
+            <!-- Footer -->
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0"  Text="Discounts" FontSize="20" FontAttributes="Bold" Margin="20"></Label>
+        <Frame Grid.Row="1" BorderColor="Transparent" IsVisible="{Binding PromotionCards.Count, Converter={StaticResource InverseBooleanConverter}}">
+            <Label Text="No discount cards available..." />
+        </Frame>
+        <ScrollView Grid.Row="1">
+            <CollectionView ItemsSource="{Binding PromotionCards, FallbackValue={x:Null}}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="LightGray" Margin="10,5,10,5">
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="7*,12*,8*" RowSpacing="0" Padding="0" ColumnSpacing="20">
+                                <Label Text="{Binding PromotionCard.CardCode}" 
+HorizontalOptions="Center" 
+                                       Margin="0"
+                                       VerticalOptions="Center"
+FontSize="12" Grid.Column="0" Grid.RowSpan="2"/>
+                                <Label Text="{Binding PromotionCard, Converter={StaticResource DiscountTypeConverter}}"
+        FontSize="16" 
+                                       FontAttributes="Bold"
+        HorizontalOptions="Start"
+                                       Margin="0"
+                                       VerticalOptions="End"
+         Grid.Column="1" Grid.Row="0"/>
+                                <Label Text="{Binding PromotionCard.MinAmount, 
+              StringFormat='Min Amount: {0:C}', 
+              FallbackValue='Min Amount: $0.00'}"
+FontSize="12" 
+                                       VerticalOptions="Start"
+HorizontalOptions="Start" Grid.Column="1" Grid.Row="1"/>
+
+                                <Button Text="{Binding IsUsed, Converter={StaticResource BoolToUsedTextConverter}}" VerticalOptions="Center"
+        FontSize="12" 
+                                        CornerRadius="50"
+                                        Background="{AppThemeBinding Light=Black,Dark=White}"
+        HorizontalOptions="Center" Margin="0" Grid.Column="2" Grid.RowSpan="2" IsEnabled="{Binding IsUsed, Converter={StaticResource InverseBooleanConverter}}" WidthRequest="85">
+                                    <Button.Triggers>
+                                        <Trigger TargetType="Button" Property="IsEnabled" Value="False">
+                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=Gray,Dark=White}" />
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=White,Dark=Black}" />
+                                        </Trigger>
+                                        <Trigger TargetType="Button" Property="IsEnabled" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=Black,Dark=White}" />
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=White,Dark=Black}" />
+                                        </Trigger>
+                                    </Button.Triggers>
+                                </Button>
+                            </Grid>
+                        </Frame>
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+        <Button Grid.Row="2" Text="+" BackgroundColor="{AppThemeBinding Light=Black,Dark=White}" FontSize="30" Padding="0" HorizontalOptions="End" VerticalOptions="Center" Margin="20" CornerRadius="100"/>
+    </Grid>
 </ContentPage>

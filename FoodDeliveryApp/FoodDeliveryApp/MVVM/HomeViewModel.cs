@@ -23,7 +23,11 @@ namespace FoodDeliveryApp.MVVM
         private bool isLoading; // To manage the loading state.
 
         public ObservableCollection<MostOrderedCategory> Categories { get; }
-        public ObservableCollection<HotProduct> HotProducts { get; }
+        public ObservableCollection<FoodItemDto> HotProducts { get; }
+        public ObservableCollection<FoodItemDto> HighRatedProducts { get; }
+        public ObservableCollection<FoodItemDto> NewestProducts { get; }
+        public ObservableCollection<FoodItemDto> CheapestProducts { get; }
+
 
         public ICommand NavigateToDetailsCommand { get; }
         public ICommand NavigateToCategoryCommand { get; }
@@ -36,14 +40,17 @@ namespace FoodDeliveryApp.MVVM
 
             // Initialize collections
             Categories = new ObservableCollection<MostOrderedCategory>();
-            HotProducts = new ObservableCollection<HotProduct>();
+            HotProducts = new ObservableCollection<FoodItemDto>();
+            HighRatedProducts = new ObservableCollection<FoodItemDto>();
+            NewestProducts = new ObservableCollection<FoodItemDto>();
+            CheapestProducts = new ObservableCollection<FoodItemDto>();
 
             // Load current address
             LoadCurrentAddressAsync();
 
             // Automatically load data
             LoadDataCommand = new AsyncRelayCommand(LoadDataAsync);
-            NavigateToDetailsCommand = new AsyncRelayCommand<HotProduct>(NavigateToDetailsAsync);
+            NavigateToDetailsCommand = new AsyncRelayCommand<FoodItemDto>(NavigateToDetailsAsync);
             NavigateToCategoryCommand = new Command<MostOrderedCategory>(NavigateToCategory);
             NavigateToSearchCommand = new AsyncRelayCommand(NavigateToSearch);
         }
@@ -53,7 +60,7 @@ namespace FoodDeliveryApp.MVVM
         private async Task LoadDataAsync()
         {
             IsLoading = true;
-
+            LoadCurrentAddressAsync();
             try
             {
                 // Fetch most ordered categories
@@ -64,12 +71,41 @@ namespace FoodDeliveryApp.MVVM
                     Categories.Add(category);
                 }
 
+
+                var userId = Preferences.Get("UserId", 0);
+
+                if (userId == 0)
+                {
+                    await Shell.Current.GoToAsync("MainPage");
+                }
+
                 // Fetch most ordered products
-                var products = await _apiService.GetMostOrderedProductsAsync();
+                var hotproducts = await _apiService.GetMostOrderedProductsAsync(userId);
                 HotProducts.Clear();
-                foreach (var product in products)
+                foreach (var product in hotproducts)
                 {
                     HotProducts.Add(product);
+                }
+                // Fetch highest rated products
+                var highratedproducts = await _apiService.GetHighestRatedProductsAsync(userId);
+                HighRatedProducts.Clear();
+                foreach (var product in highratedproducts)
+                {
+                    HighRatedProducts.Add(product);
+                }
+                // Fetch the recently added products
+                var newproducts = await _apiService.GetNewestFoodItemsAsync(userId);
+                NewestProducts.Clear();
+                foreach (var product in newproducts)
+                {
+                    NewestProducts.Add(product);
+                }
+                // Fetch cheapest products
+                var cheapproducts = await _apiService.GetCheapestFoodItemsAsync(userId);
+                CheapestProducts.Clear();
+                foreach (var product in cheapproducts)
+                {
+                    CheapestProducts.Add(product);
                 }
             }
             catch (Exception ex)
@@ -87,7 +123,7 @@ namespace FoodDeliveryApp.MVVM
             {
                 IsLoading = true;
 
-                // Get UserId from preferences
+                // Get Id_Users from preferences
                 var userId = Preferences.Get("UserId", 0);
 
                 if (userId == 0)
@@ -115,14 +151,14 @@ namespace FoodDeliveryApp.MVVM
             Debug.WriteLine("Search command executed.");
             await Task.CompletedTask;
         }
-        private async Task NavigateToDetailsAsync(HotProduct product)
+        private async Task NavigateToDetailsAsync(FoodItemDto product)
         {
             try {
             if (product != null)
             {
                 var navigationParameter = new Dictionary<string, object>
         {
-            { "SelectedProductID", product.foodItemId.ToString() }
+            { "SelectedProductID", product.Id.ToString() }
         };
                 await Shell.Current.GoToAsync("ProductDetailsPage", true, navigationParameter);
             }
@@ -137,7 +173,7 @@ namespace FoodDeliveryApp.MVVM
         {
             if (category != null)
             {
-                await Shell.Current.GoToAsync($"CategoryPage?categoryId={category.CategoryId}");
+                await Shell.Current.GoToAsync($"CategoryPage?categoryId={category.Id_Categories}");
             }
         }
         private async Task NavigateToSearch()

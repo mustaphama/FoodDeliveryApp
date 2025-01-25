@@ -67,21 +67,20 @@ namespace FDA.Controllers
                 // Find the first available delivery guy with a car
                 var deliveryGuy = await _context.DeliveryGuys
                     .Where(dg => dg.Availability == true)
-                    .OrderBy(dg => dg.VehicleType == "Car" ? 0 : 1) // Prioritize cars
+                    .OrderBy(dg => dg.VehiculeType == "Car" ? 0 : 1) // Prioritize cars
                     .FirstOrDefaultAsync();
 
                 if (deliveryGuy == null)
                     return StatusCode(500, "No delivery guys are currently available.");
-
+                Debug.WriteLine(cartRequest.Id_Users);
                 // Create new order
                 var order = new Order
                 {
-                    UserId = cartRequest.UserId, // Retrieve from Preferences or request
+                    Id_Users = cartRequest.Id_Users, // Retrieve from Preferences or request
                     TotalAmount = cartRequest.CartItems.Sum(ci => ci.Price * ci.Quantity),
                     OrderStatus = "Pending",
-                    DeliveryGuyId = deliveryGuy.Id, // Assign the selected delivery guy
-                    RestaurantId = null, // Placeholder for now
-                    PromotionCardId = null, // Placeholder for now
+                    Id_DeliveryGuys = deliveryGuy.Id, // Assign the selected delivery guy
+                    Id_PromotionCards = null, // Placeholder for now
                     CreatedAt = DateTime.Now,
                     OrderDate = DateTime.Now
                 };
@@ -94,8 +93,8 @@ namespace FDA.Controllers
                 {
                     var orderItem = new OrderItem
                     {
-                        OrderId = order.Id,
-                        FoodItemId = item.FoodItemId,
+                        Id_Orders = order.Id,
+                        Id_FoodItems = item.Id_FoodItems,
                         Quantity = item.Quantity,
                         Price = item.Price
                     };
@@ -110,7 +109,7 @@ namespace FDA.Controllers
                 _context.DeliveryGuys.Update(deliveryGuy);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { Message = "Order placed successfully.", OrderId = order.Id });
+                return Ok(new { Message = "Order placed successfully.", Id_Orders = order.Id });
             }
             catch (Exception ex)
             {
@@ -118,11 +117,11 @@ namespace FDA.Controllers
             }
         }
         // Endpoint to get the status of an order by its ID
-        [HttpGet("{orderId}/status")]
-        public async Task<IActionResult> GetOrderStatus(int orderId)
+        [HttpGet("{Id_Orders}/status")]
+        public async Task<IActionResult> GetOrderStatus(int Id_Orders)
         {
             var order = await _context.Orders
-                .Where(o => o.Id == orderId)
+                .Where(o => o.Id == Id_Orders)
                 .Select(o => o.OrderStatus)
                 .FirstOrDefaultAsync();
 

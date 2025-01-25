@@ -54,6 +54,19 @@ namespace FDA.Controllers
             return NoContent();
         }
 
+        [HttpGet("restaurants/{restaurantId}/menus")]
+        public async Task<IActionResult> GetMenusByRestaurantId(int restaurantId)
+        {
+            var menus = await _context.Menus
+                                        .Where(m => m.Id_Restaurants == restaurantId)
+                                        .ToListAsync();
+
+            if (!menus.Any())
+                return NotFound("No menus found for this restaurant.");
+
+            return Ok(menus);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMenu(int id)
         {

@@ -42,7 +42,7 @@ namespace FoodDeliveryApp.MVVM
             var cart = _cartService.GetCartItems();
 
             // Extract food item IDs from the cart
-            var foodItemIds = cart.Select(item => item.FoodItemId).ToList();
+            var foodItemIds = cart.Select(item => item.Id_FoodItems).ToList();
 
             if (foodItemIds.Count > 0)
             {
@@ -52,7 +52,7 @@ namespace FoodDeliveryApp.MVVM
                 // Map quantities to the retrieved items
                 foreach (var item in foodItems)
                 {
-                    var cartItem = cart.FirstOrDefault(c => c.FoodItemId == item.Id);
+                    var cartItem = cart.FirstOrDefault(c => c.Id_FoodItems == item.Id);
                     if (cartItem != null)
                     {
                         item.Quantity = cartItem.Quantity;

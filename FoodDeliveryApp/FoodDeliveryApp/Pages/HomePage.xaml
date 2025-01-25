@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FoodDeliveryApp.MVVM"
              xmlns:converters="clr-namespace:FoodDeliveryApp.Resources.Converters"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="FoodDeliveryApp.Pages.HomePage">
 
     <ContentPage.BindingContext>
@@ -42,10 +43,10 @@
                     <Image Grid.Column="2" Source="notifications_icon.png" WidthRequest="40" HeightRequest="40" HorizontalOptions="End" VerticalOptions="Center" />
                 </Grid>
                 <Frame Padding="0" Margin="5,10,5,10">
-                    <Image Source="promotion_image_example.webp" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                    <Image Source="promotion_image_example.png" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
                 </Frame>
 
-                <BoxView HeightRequest="0.25" BackgroundColor="LightGray" Margin="0" />
+                <BoxView HeightRequest="0.25" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}" Margin="0" />
 
                 <!-- Categories Grid -->
                 <CollectionView ItemsSource="{Binding Categories}" Margin="0,10,0,10">
@@ -54,11 +55,18 @@
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Frame BackgroundColor="#f5f5f5" CornerRadius="10" Padding="7" Margin="5">
+                            <Frame BackgroundColor="{AppThemeBinding Light=#f5f5f5, Dark=DarkGray}" CornerRadius="10" Padding="7" Margin="5">
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding BindingContext.NavigateToCategoryCommand, Source={RelativeSource AncestorType={x:Type CollectionView}}}"
                                           CommandParameter="{Binding .}" />
                                 </Frame.GestureRecognizers>
+                                <Frame.Behaviors>
+                                    <toolkit:TouchBehavior
+                DefaultAnimationDuration="250"
+                DefaultAnimationEasing="{x:Static Easing.Linear}"
+
+                                        PressedBackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}"/>
+                                </Frame.Behaviors>
                                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
                                     <Image Source="{Binding CategoryName, Converter={StaticResource CategoryIconConverter}}" 
                            WidthRequest="50" 
@@ -72,7 +80,7 @@
                 </CollectionView>
 
 
-                <BoxView HeightRequest="0.25" BackgroundColor="LightGray" Margin="0" />
+                <BoxView HeightRequest="0.25" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}" Margin="0" />
 
                 <!-- Hot Products Section -->
                 <Label Text="Hot Products" FontAttributes="Bold" FontSize="18" Margin="5,10,0,5" />
@@ -82,60 +90,216 @@
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Grid RowDefinitions="3*,*" ColumnDefinitions="*" Padding ="5">
-                                <Grid.GestureRecognizers>
+                            <Frame Padding="0" Margin="5" BackgroundColor="Transparent" BorderColor="Transparent" CornerRadius="15">
+                                <Frame.GestureRecognizers>
                                     <!-- TapGestureRecognizer for navigation -->
                                     <TapGestureRecognizer 
                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HomeViewModel}}, Path=NavigateToDetailsCommand}" 
                         CommandParameter="{Binding}"/>
-                                </Grid.GestureRecognizers>
-                                <Frame Padding="0" BorderColor="LightGray" CornerRadius="10" HeightRequest="150" WidthRequest="250">
-                                    
+                                </Frame.GestureRecognizers>
+                                <Frame.Behaviors>
+                                    <toolkit:TouchBehavior
+DefaultAnimationDuration="250"
+DefaultAnimationEasing="{x:Static Easing.Linear}"
+                        PressedBackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}"
+                                        PressedOpacity="0.6"/>
+                                </Frame.Behaviors>
+                                <Grid RowDefinitions="3*,*" ColumnDefinitions="*" Margin="0">
+                                
+                                <Border Stroke="{StaticResource OffBlack}"
+StrokeThickness="0.3"
+Background="Transparent" Padding="0"  HeightRequest="150" WidthRequest="250" >
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10"/>
+                                    </Border.StrokeShape>
                                     <!-- Image in the top half -->
-                                    <Image Source="{Binding foodItemId, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
-                                    <!-- Details in the bottom half -->
-                                    <Frame.GestureRecognizers>
-                                        <!-- TapGestureRecognizer for navigation -->
-                                        <TapGestureRecognizer 
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HomeViewModel}}, Path=NavigateToDetailsCommand}" 
-                                        CommandParameter="{Binding}"/>
-                                    </Frame.GestureRecognizers>
+                                    <Image Source="{Binding Id, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
                                     
-                                </Frame>
+                                </Border>
+                                    <!-- Details in the bottom half -->
                                 <VerticalStackLayout Grid.Row="1" Padding="10,1,1,1" Margin="1" Spacing="1" VerticalOptions="Center">
-                                    <Label Text="{Binding foodItemName}" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="Start" />
-                                    <Label Text="4.7 ★ (120+) · 25 min" FontSize="12" HorizontalTextAlignment="Start" TextColor="DarkSlateGrey" />
+                                    <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="Start" />
+                                    <Label FontSize="12" HorizontalTextAlignment="Start" TextColor="{AppThemeBinding Light=DarkSlateGrey, Dark=DarkGray}">
+                                        <Label.Text>
+                                        <MultiBinding StringFormat="{}{0} ★ ({1}+) · 25 min">
+                                            <Binding Path="Ratings" />
+                                            <Binding Path="NumOfReviews" />
+                                        </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
                                     <Label Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="Start" />
                                 </VerticalStackLayout>
                             </Grid>
+                            </Frame>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-                
-                <BoxView HeightRequest="0.25" BackgroundColor="LightGray" Margin="0" />
-                
-                <Label Text="Closest" FontAttributes="Bold" FontSize="18" Margin="5,10,0,5" />
-                <CollectionView ItemsSource="{Binding HotProducts}" Margin="0,0,0,10">
+
+                <BoxView HeightRequest="0.25" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}" Margin="0" />
+
+                <!-- Highest Rated Products Section -->
+                <Label Text="Most Loved" FontAttributes="Bold" FontSize="18" Margin="5,10,0,5" />
+                <CollectionView ItemsSource="{Binding HighRatedProducts}" Margin="0,0,0,10">
                     <CollectionView.ItemsLayout>
                         <GridItemsLayout Orientation="Horizontal" Span="1" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Grid RowDefinitions="3*,*" ColumnDefinitions="*" Padding ="5">
-                                <Frame Padding="0" BorderColor="LightGray" CornerRadius="10" HeightRequest="150" WidthRequest="250">
-                                    <!-- Image in the top half -->
-                                    <Image Source="{Binding foodItemId, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                            <Frame Padding="0" Margin="5" BackgroundColor="Transparent" BorderColor="Transparent" CornerRadius="15">
+                                <Frame.GestureRecognizers>
+                                    <!-- TapGestureRecognizer for navigation -->
+                                    <TapGestureRecognizer 
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HomeViewModel}}, Path=NavigateToDetailsCommand}" 
+                        CommandParameter="{Binding}"/>
+                                </Frame.GestureRecognizers>
+                                <Frame.Behaviors>
+                                    <toolkit:TouchBehavior
+DefaultAnimationDuration="250"
+DefaultAnimationEasing="{x:Static Easing.Linear}"
+                        PressedBackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}"
+                                        PressedOpacity="0.6"/>
+                                </Frame.Behaviors>
+                                <Grid RowDefinitions="3*,*" ColumnDefinitions="*" Margin="0">
+
+                                    <Border Stroke="{StaticResource OffBlack}"
+StrokeThickness="0.3"
+Background="Transparent" Padding="0"  HeightRequest="150" WidthRequest="250" >
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="10"/>
+                                        </Border.StrokeShape>
+                                        <!-- Image in the top half -->
+                                        <Image Source="{Binding Id, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+
+                                    </Border>
                                     <!-- Details in the bottom half -->
-                                </Frame>
-                                <VerticalStackLayout Grid.Row="1" Padding="10,1,1,1" Margin="1" Spacing="1" VerticalOptions="Center">
-                                    <Label Text="{Binding foodItemName}" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="Start" />
-                                    <Label Text="4.7 ★ (120+) · 25 min" FontSize="12" HorizontalTextAlignment="Start" TextColor="DarkSlateGrey" />
-                                    <Label Text="{Binding Price}" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="Start" />
-                                </VerticalStackLayout>
-                            </Grid>
+                                    <VerticalStackLayout Grid.Row="1" Padding="10,1,1,1" Margin="1" Spacing="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="Start" />
+                                        <Label FontSize="12" HorizontalTextAlignment="Start" TextColor="{AppThemeBinding Light=DarkSlateGrey, Dark=DarkGray}">
+                                            <Label.Text>
+                                                <MultiBinding StringFormat="{}{0} ★ ({1}+) · 25 min">
+                                                    <Binding Path="Ratings" />
+                                                    <Binding Path="NumOfReviews" />
+                                                </MultiBinding>
+                                            </Label.Text>
+                                        </Label>
+                                        <Label Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="Start" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <BoxView HeightRequest="0.25" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}" Margin="0" />
+                <!-- Hot Products Section -->
+                <Label Text="New Arrivals" FontAttributes="Bold" FontSize="18" Margin="5,10,0,5" />
+                <CollectionView ItemsSource="{Binding NewestProducts}" Margin="0,0,0,10">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Horizontal" Span="1" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Padding="0" Margin="5" BackgroundColor="Transparent" BorderColor="Transparent" CornerRadius="15">
+                                <Frame.GestureRecognizers>
+                                    <!-- TapGestureRecognizer for navigation -->
+                                    <TapGestureRecognizer 
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HomeViewModel}}, Path=NavigateToDetailsCommand}" 
+                        CommandParameter="{Binding}"/>
+                                </Frame.GestureRecognizers>
+                                <Frame.Behaviors>
+                                    <toolkit:TouchBehavior
+DefaultAnimationDuration="250"
+DefaultAnimationEasing="{x:Static Easing.Linear}"
+                        PressedBackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}"
+                                        PressedOpacity="0.6"/>
+                                </Frame.Behaviors>
+                                <Grid RowDefinitions="3*,*" ColumnDefinitions="*" Margin="0">
+
+                                    <Border Stroke="{StaticResource OffBlack}"
+StrokeThickness="0.3"
+Background="Transparent" Padding="0"  HeightRequest="150" WidthRequest="250" >
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="10"/>
+                                        </Border.StrokeShape>
+                                        <!-- Image in the top half -->
+                                        <Image Source="{Binding Id, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+
+                                    </Border>
+                                    <!-- Details in the bottom half -->
+                                    <VerticalStackLayout Grid.Row="1" Padding="10,1,1,1" Margin="1" Spacing="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="Start" />
+                                        <Label FontSize="12" HorizontalTextAlignment="Start" TextColor="{AppThemeBinding Light=DarkSlateGrey, Dark=DarkGray}">
+                                            <Label.Text>
+                                                <MultiBinding StringFormat="{}{0} ★ ({1}+) · 25 min">
+                                                    <Binding Path="Ratings" />
+                                                    <Binding Path="NumOfReviews" />
+                                                </MultiBinding>
+                                            </Label.Text>
+                                        </Label>
+                                        <Label Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="Start" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <BoxView HeightRequest="0.25" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}" Margin="0" />
+                <!-- Hot Products Section -->
+                <Label Text="Best Prices" FontAttributes="Bold" FontSize="18" Margin="5,10,0,5" />
+                <CollectionView ItemsSource="{Binding CheapestProducts}" Margin="0,0,0,10">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Horizontal" Span="1" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Padding="0" Margin="5" BackgroundColor="Transparent" BorderColor="Transparent" CornerRadius="15">
+                                <Frame.GestureRecognizers>
+                                    <!-- TapGestureRecognizer for navigation -->
+                                    <TapGestureRecognizer 
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HomeViewModel}}, Path=NavigateToDetailsCommand}" 
+                        CommandParameter="{Binding}"/>
+                                </Frame.GestureRecognizers>
+                                <Frame.Behaviors>
+                                    <toolkit:TouchBehavior
+DefaultAnimationDuration="250"
+DefaultAnimationEasing="{x:Static Easing.Linear}"
+                        PressedBackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}"
+                                        PressedOpacity="0.6"/>
+                                </Frame.Behaviors>
+                                <Grid RowDefinitions="3*,*" ColumnDefinitions="*" Margin="0">
+
+                                    <Border Stroke="{StaticResource OffBlack}"
+StrokeThickness="0.3"
+Background="Transparent" Padding="0"  HeightRequest="150" WidthRequest="250" >
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="10"/>
+                                        </Border.StrokeShape>
+                                        <!-- Image in the top half -->
+                                        <Image Source="{Binding Id, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+
+                                    </Border>
+                                    <!-- Details in the bottom half -->
+                                    <VerticalStackLayout Grid.Row="1" Padding="10,1,1,1" Margin="1" Spacing="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="Start" />
+                                        <Label FontSize="12" HorizontalTextAlignment="Start" TextColor="{AppThemeBinding Light=DarkSlateGrey, Dark=DarkGray}">
+                                            <Label.Text>
+                                                <MultiBinding StringFormat="{}{0} ★ ({1}+) · 25 min">
+                                                    <Binding Path="Ratings" />
+                                                    <Binding Path="NumOfReviews" />
+                                                </MultiBinding>
+                                            </Label.Text>
+                                        </Label>
+                                        <Label Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="Start" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <BoxView HeightRequest="0.25" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}" Margin="0" />
+
             </VerticalStackLayout>
             
         </ScrollView>

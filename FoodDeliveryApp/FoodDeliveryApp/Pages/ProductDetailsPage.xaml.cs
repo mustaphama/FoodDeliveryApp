@@ -17,6 +17,11 @@ public partial class ProductDetailsPage : ContentPage
     {
         base.OnAppearing();
 
+        if (BindingContext is ProductDetailsViewModel viewModel)
+        {
+            viewModel.ResetState();
+        }
+
         // Initialize button references (using the generic version)
         _addToCartButton = this.FindByName<Button>("AddToCartButton");
         _checkCartButton = this.FindByName<Button>("CheckCartButton");

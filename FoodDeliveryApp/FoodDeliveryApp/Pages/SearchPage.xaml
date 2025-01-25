@@ -13,12 +13,12 @@
             <converters:ImageUrlFromIdConverter x:Key="ImageUrlFromIdConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
-    <StackLayout Padding="10">
+    <Grid Padding="10" RowDefinitions="Auto,*">
         <!-- Search Bar -->
-        <SearchBar Placeholder="Search for your favorite foods..."
+        <SearchBar Grid.Row="0" Placeholder="Search for your favorite foods..."
                    Text="{Binding SearchQuery}"
                    SearchCommand="{Binding PerformSearchCommand}" Margin="0,0,0,15" />
-
+        <ScrollView Grid.Row="1">
         <!-- Search Results -->
         <CollectionView ItemsSource="{Binding SearchResults}" Margin="0,0,0,10">
             <CollectionView.ItemTemplate>
@@ -45,13 +45,21 @@ CommandParameter="{Binding}"/>
                         </Frame>
                         <Grid Grid.Row="1" RowDefinitions="*,*" ColumnDefinitions="*,*" Padding="10,1,1,1" Margin="1" VerticalOptions="Center">
                             <Label Grid.Row="0" Grid.Column="0" Padding="10,0,0,0"  Text="{Binding Name}" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="Start"/>
-                            <Label Grid.Row="1" Grid.Column="0" Padding="10,0,0,0" Text="{Binding RestaurantName}" FontSize="14" HorizontalTextAlignment="Start" TextColor="DarkSlateGrey"/>
-                            <Label Grid.Row="1" Grid.Column="1"  Text="4.7 ★ (120+) · 25 min" FontSize="12" HorizontalTextAlignment="Center" TextColor="DarkSlateGrey" />
-                            <Label Grid.Row="0" Grid.Column="1"  Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="16" TextColor="Green" HorizontalTextAlignment="Center" />
+                            <Label Grid.Row="1" Grid.Column="0" Padding="10,0,0,0" Text="{Binding Restaurant.Name}" FontSize="14" HorizontalTextAlignment="Start" TextColor="DarkSlateGrey"/>
+                                <Label Grid.Row="1" Grid.Column="1" FontSize="12" HorizontalTextAlignment="Center" TextColor="DarkSlateGrey">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0} ★ ({1}+) · 25 min">
+                                            <Binding Path="Ratings" />
+                                            <Binding Path="NumOfReviews" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="0" Grid.Column="1"  Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="16" TextColor="Green" HorizontalTextAlignment="Center" />
                         </Grid>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </StackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

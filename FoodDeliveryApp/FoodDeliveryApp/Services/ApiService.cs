@@ -30,7 +30,7 @@ public class ApiService
     }
 
     // Method to Register a New User
-    public async Task<bool> RegisterUser(string name, string email, string password, string phoneNumber, string address, string profilePictureUrl)
+    public async Task<bool> RegisterUser(string name, string email, string password, string phoneNumber, string address, string city, string country)
     {
         var registerData = new
         {
@@ -39,7 +39,8 @@ public class ApiService
             Password = password,
             PhoneNumber = phoneNumber,
             Address = address,
-            ProfilePictureUrl = profilePictureUrl
+            City = city,
+            Country = country
         };
 
         var json = JsonConvert.SerializeObject(registerData);  // Serialize data to JSON
@@ -57,8 +58,8 @@ public class ApiService
         }
     }
 
-    // Method to Log In a User and retrieve UserId
-    public async Task<(bool IsSuccess, string ErrorMessage, int UserId)> LoginUser(string email, string password)
+    // Method to Log In a User and retrieve Id_Users
+    public async Task<(bool IsSuccess, string ErrorMessage, int Id_Users)> LoginUser(string email, string password)
     {
         var loginData = new
         {
@@ -77,12 +78,12 @@ public class ApiService
             {
                 var responseData = await response.Content.ReadAsStringAsync();
 
-                // Deserialize response to extract UserId
+                // Deserialize response to extract Id_Users
                 var jsonResponse = JsonConvert.DeserializeObject<Models>(responseData);
 
-                if (jsonResponse != null && jsonResponse.UserId > 0)
+                if (jsonResponse != null && jsonResponse.Id_Users > 0)
                 {
-                    return (true, "Login successful!", jsonResponse.UserId);  // Successful login with UserId
+                    return (true, "Login successful!", jsonResponse.Id_Users);  // Successful login with Id_Users
                 }
                 else
                 {
@@ -125,29 +126,100 @@ public class ApiService
         }
     }
 
-    public async Task<List<HotProduct>> GetMostOrderedProductsAsync()
+    public async Task<List<FoodItemDto>> GetMostOrderedProductsAsync(int userId)
     {
         try
         {
-            var response = await _httpClient.GetAsync("api/Home/GetMostOrderedProducts");
+            // Add userId as a query parameter to the API request
+            var response = await _httpClient.GetAsync($"api/Home/GetMostOrderedProducts?userId={userId}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<HotProduct>>(json);
+                return JsonConvert.DeserializeObject<List<FoodItemDto>>(json);
             }
             else
             {
                 Debug.WriteLine($"Failed to fetch products: {response.StatusCode}");
-                return new List<HotProduct>();
+                return new List<FoodItemDto>();
             }
         }
         catch (HttpRequestException ex)
         {
             Debug.WriteLine($"Request Exception: {ex.Message}");
-            return new List<HotProduct>();
+            return new List<FoodItemDto>();
         }
     }
-    public async Task<Product> GetProductById(string id)
+    public async Task<List<FoodItemDto>> GetHighestRatedProductsAsync(int userId)
+    {
+        try
+        {
+            // Add userId as a query parameter to the API request
+            var response = await _httpClient.GetAsync($"api/Home/GetHighestRatedProducts?userId={userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<FoodItemDto>>(json);
+            }
+            else
+            {
+                Debug.WriteLine($"Failed to fetch products: {response.StatusCode}");
+                return new List<FoodItemDto>();
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Debug.WriteLine($"Request Exception: {ex.Message}");
+            return new List<FoodItemDto>();
+        }
+    }
+    public async Task<List<FoodItemDto>> GetNewestFoodItemsAsync(int userId)
+    {
+        try
+        {
+            // Add userId as a query parameter to the API request
+            var response = await _httpClient.GetAsync($"api/Home/GetNewestFoodItems?userId={userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<FoodItemDto>>(json);
+            }
+            else
+            {
+                Debug.WriteLine($"Failed to fetch products: {response.StatusCode}");
+                return new List<FoodItemDto>();
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Debug.WriteLine($"Request Exception: {ex.Message}");
+            return new List<FoodItemDto>();
+        }
+    }
+    public async Task<List<FoodItemDto>> GetCheapestFoodItemsAsync(int userId)
+    {
+        try
+        {
+            // Add userId as a query parameter to the API request
+            var response = await _httpClient.GetAsync($"api/Home/GetCheapestFoodItems?userId={userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<FoodItemDto>>(json);
+            }
+            else
+            {
+                Debug.WriteLine($"Failed to fetch products: {response.StatusCode}");
+                return new List<FoodItemDto>();
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Debug.WriteLine($"Request Exception: {ex.Message}");
+            return new List<FoodItemDto>();
+        }
+    }
+
+    public async Task<FoodItemDto> GetProductById(string id)
     {
         try
         {
@@ -156,7 +228,7 @@ public class ApiService
             if (response.IsSuccessStatusCode)
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<Product>(jsonResponse);
+                return JsonConvert.DeserializeObject<FoodItemDto>(jsonResponse);
             }
             else
             {
@@ -194,7 +266,7 @@ public class ApiService
             throw;
         }
     }
-    // Fetch user profile details from API by UserId
+    // Fetch user profile details from API by Id_Users
     public async Task<User> GetUserProfileAsync(string userId)
     {
         try
@@ -466,20 +538,19 @@ public class ApiService
                 var rawResponse = await response.Content.ReadAsStringAsync();
                 Debug.WriteLine($"Raw Response: {rawResponse}");
                 var responseData = await response.Content.ReadFromJsonAsync<OrderResponse>();
-                return (true, responseData.Message, responseData.OrderId); // Success, no error message, valid OrderId
+                return (true, responseData.Message, responseData.Id_Orders); // Success, no error message, valid Id_Orders
             }
             else
             {
                 var errorMessage = $"Error placing order: {response.StatusCode}";
-                Debug.WriteLine(errorMessage);
-                return (false, errorMessage, 0); // Failure, error message, invalid OrderId
+                return (false, errorMessage, 0); // Failure, error message, invalid Id_Orders
             }
         }
         catch (Exception ex)
         {
             var errorMessage = $"Exception while placing order: {ex.Message}";
             Debug.WriteLine(errorMessage);
-            return (false, errorMessage, 0); // Failure, error message, invalid OrderId
+            return (false, errorMessage, 0); // Failure, error message, invalid Id_Orders
         }
     }
     public async Task<(bool IsSuccess, string Status, string ErrorMessage)> GetOrderStatusAsync(int orderId)
@@ -504,19 +575,25 @@ public class ApiService
             return (false, string.Empty, ex.Message);
         }
     }
-    public async Task<List<FoodItemDto>> GetFoodItemsByCategoryAsync(int categoryId)
+    public async Task<PaginatedResponse<FoodItemDto>> GetFoodItemsByCategoryAsync(int categoryId, int pageNumber = 1, int pageSize = 8)
     {
-        var response = await _httpClient.GetAsync($"api/Categories/{categoryId}/food-items");
+        // Construct the URL with pagination parameters
+        var url = $"api/Categories/{categoryId}/food-items?pageNumber={pageNumber}&pageSize={pageSize}";
+        var response = await _httpClient.GetAsync(url);
+
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            return System.Text.Json.JsonSerializer.Deserialize<List<FoodItemDto>>(content, new JsonSerializerOptions
+
+            // Deserialize the response into the PaginatedResponse<FoodItemDto> type
+            return System.Text.Json.JsonSerializer.Deserialize<PaginatedResponse<FoodItemDto>>(content, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
         }
 
-        throw new Exception($"Error fetching food items: {response.ReasonPhrase}");
+        // Handle error response
+        throw new Exception($"Failed to fetch food items. Status code: {response.StatusCode}");
     }
     public async Task<CategoryDto> GetCategoryByIdAsync(int categoryId)
     {
@@ -533,7 +610,7 @@ public class ApiService
             return null;
         }
     }
-    public async Task<List<FoodItemsSearchQuery>> SearchFoodItemsAsync(string query)
+    public async Task<List<FoodItemDto>> SearchFoodItemsAsync(string query)
     {
         try
         {
@@ -541,7 +618,7 @@ public class ApiService
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                return System.Text.Json.JsonSerializer.Deserialize<List<FoodItemsSearchQuery>>(content, new JsonSerializerOptions
+                return System.Text.Json.JsonSerializer.Deserialize<List<FoodItemDto>>(content, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
@@ -551,6 +628,148 @@ public class ApiService
         catch (Exception ex)
         {
             Debug.WriteLine($"Error while searching {ex.Message}");
+            return null;
+        }
+
+    }
+    public async Task<(bool IsSuccess, string ErrorMessage)> SubmitProductRatingAsync(RatingRequest ratingRequest)
+    {
+        try
+        {
+            // Make the HTTP POST request
+            var response = await _httpClient.PostAsJsonAsync("api/FoodItems/submit-rating", ratingRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // If the response indicates success, return true with no error message
+                return (true, string.Empty);
+            }
+            else
+            {
+                // If the response is unsuccessful, read and return the error message
+                var errorContent = await response.Content.ReadAsStringAsync();
+                return (false, errorContent);
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            // Handle HTTP-specific exceptions
+            return (false, $"HTTP Request Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            // Handle general exceptions
+            return (false, $"Unexpected Error: {ex.Message}");
+        }
+    }
+    public async Task<RestaurantDto> GetRestaurantById(int restaurantId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/Restaurant/{restaurantId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return System.Text.Json.JsonSerializer.Deserialize<RestaurantDto>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+            throw new Exception($"{response.ReasonPhrase}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error while fetching restaurant data {ex.Message}");
+            return null;
+        }
+
+    }
+    public async Task<List<Menu>> GetMenusByRestaurantId(int restaurantId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/Menus/restaurants/{restaurantId}/menus");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return System.Text.Json.JsonSerializer.Deserialize<List<Menu>>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+            throw new Exception($"{response.ReasonPhrase}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error while fetching Menu data {ex.Message}");
+            return null;
+        }
+
+    }
+
+    public async Task<List<FoodItemDto>> GetFoodItemsByMenuId(int menuId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/FoodItems/menus/{menuId}/fooditems");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return System.Text.Json.JsonSerializer.Deserialize<List<FoodItemDto>>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+            throw new Exception($"{response.ReasonPhrase}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error while fetching FoodItem data {ex.Message}");
+            return null;
+        }
+
+    }
+    public async Task<List<FoodItemDto>> GetRecommendationsAsync(int foodItemId)
+    {
+        try
+        {
+            // Add foodItemId as a query parameter to the API request
+            var response = await _httpClient.GetAsync($"api/FoodItems/{foodItemId}/recommendations");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<FoodItemDto>>(json);
+            }
+            else
+            {
+                Debug.WriteLine($"Failed to fetch products: {response.StatusCode}");
+                return new List<FoodItemDto>();
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Debug.WriteLine($"Request Exception: {ex.Message}");
+            return new List<FoodItemDto>();
+        }
+    }
+    public async Task<List<UserCards>> GetPromotionCardsByUserId(int userId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/UserCards/User/{userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return System.Text.Json.JsonSerializer.Deserialize<List<UserCards>>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+            throw new Exception($"{response.ReasonPhrase}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error while fetching Promotion Cards data {ex.Message}");
             return null;
         }
 

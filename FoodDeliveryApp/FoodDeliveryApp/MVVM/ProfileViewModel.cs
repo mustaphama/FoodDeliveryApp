@@ -44,7 +44,7 @@ namespace FoodDeliveryApp.MVVM
 
         private void LoadUserProfile()
         {
-            // Get UserId from preferences (already set when user logs in)
+            // Get Id_Users from preferences (already set when user logs in)
             var userId = Preferences.Get("UserId", 0);
 
             if (userId!=0)

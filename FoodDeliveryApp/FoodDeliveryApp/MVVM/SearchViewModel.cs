@@ -14,8 +14,8 @@ namespace FoodDeliveryApp.MVVM
         public SearchViewModel()
         {
             _apiService = new ApiService();
-            SearchResults = new ObservableCollection<FoodItemsSearchQuery>();
-            NavigateToDetailsCommand = new AsyncRelayCommand<FoodItemsSearchQuery>(NavigateToDetailsAsync);
+            SearchResults = new ObservableCollection<FoodItemDto>();
+            NavigateToDetailsCommand = new AsyncRelayCommand<FoodItemDto>(NavigateToDetailsAsync);
         }
         public ICommand NavigateToDetailsCommand { get; }
 
@@ -24,7 +24,7 @@ namespace FoodDeliveryApp.MVVM
         private string searchQuery;
 
         [ObservableProperty]
-        private ObservableCollection<FoodItemsSearchQuery> searchResults;
+        private ObservableCollection<FoodItemDto> searchResults;
 
         [RelayCommand]
         private async Task PerformSearch()
@@ -39,7 +39,7 @@ namespace FoodDeliveryApp.MVVM
                 SearchResults.Add(item);
         }
 
-    private async Task NavigateToDetailsAsync(FoodItemsSearchQuery product)
+    private async Task NavigateToDetailsAsync(FoodItemDto product)
     {
         try
         {

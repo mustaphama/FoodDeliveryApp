@@ -39,7 +39,7 @@ namespace FoodDeliveryApp.MVVM
             {
                 IsLoading = true;
 
-                // Get UserId from preferences
+                // Get Id_Users from preferences
                 var userId = Preferences.Get("UserId", 0);
 
                 if (userId == 0)
@@ -74,7 +74,7 @@ namespace FoodDeliveryApp.MVVM
             {
                 IsSaveEnabled = false;
 
-                // Get UserId from preferences
+                // Get Id_Users from preferences
                 var userId = Preferences.Get("UserId", 0);
 
                 if (userId == 0)

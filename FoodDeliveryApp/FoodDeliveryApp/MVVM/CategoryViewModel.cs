@@ -12,6 +12,7 @@ namespace FoodDeliveryApp.MVVM
     public partial class CategoryViewModel : ObservableObject
     {
         private readonly ApiService _apiService;
+        private const int PageSize = 5; // Number of items to load per page
 
         public CategoryViewModel()
         {
@@ -19,8 +20,8 @@ namespace FoodDeliveryApp.MVVM
             FoodItems = new ObservableCollection<FoodItemDto>();
             NavigateToDetailsCommand = new AsyncRelayCommand<FoodItemDto>(NavigateToDetailsAsync);
         }
+
         public ICommand NavigateToDetailsCommand { get; }
-        // The category ID passed from navigation
         private int _categoryId;
         public int CategoryId
         {
@@ -34,45 +35,81 @@ namespace FoodDeliveryApp.MVVM
                 }
             }
         }
-
-        // Observable property for the category's most-ordered data
         [ObservableProperty]
         private MostOrderedCategory _categoryData;
 
-        // Observable collection of food items
         [ObservableProperty]
         private ObservableCollection<FoodItemDto> _foodItems;
 
         [ObservableProperty]
         private string _categoryName;
 
-        // Method to load category data and food items asynchronously
+        // For paging
+        private int _currentPage = 0;
+        private bool _isLoadingMore = false;
+        private bool _hasMoreItems = true;
+
         private async void LoadCategoryDataAsync(int categoryId)
         {
             try
             {
                 Debug.WriteLine($"Loading data for category ID: {categoryId}");
+
                 // Fetch the category name
                 var category = await _apiService.GetCategoryByIdAsync(categoryId);
                 CategoryName = category?.CategoryName ?? "Unknown Category";
 
-                // Fetch food items by category
-                var items = await _apiService.GetFoodItemsByCategoryAsync(categoryId);
-
-                // Clear and populate the ObservableCollection
+                // Load the first page of items
+                _currentPage = 0;
+                _hasMoreItems = true;
                 FoodItems.Clear();
-                foreach (var item in items)
-                {
-                    FoodItems.Add(item);
-                }
-
-                Debug.WriteLine($"Loaded {FoodItems.Count} food items for category ID: {categoryId}");
+                await LoadMoreItemsAsync();
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error loading category data: {ex.Message}");
             }
         }
+        private bool _isThrottleActive = false;
+        private async Task LoadMoreItemsAsync()
+        {
+            if (_isLoadingMore || !_hasMoreItems || _isThrottleActive)
+                return;
+
+            _isThrottleActive = true;
+
+            try
+            {
+                _isLoadingMore = true;
+                _currentPage++;
+
+                var items = await _apiService.GetFoodItemsByCategoryAsync(CategoryId, _currentPage, PageSize);
+                if (items.Items.Count() < PageSize)
+                {
+                    _hasMoreItems = false;
+                }
+
+                foreach (var item in items.Items)
+                {
+                    FoodItems.Add(item);
+                }
+
+                Debug.WriteLine($"Loaded page {_currentPage}, total items: {FoodItems.Count}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading more items: {ex.Message}");
+            }
+            finally
+            {
+                _isLoadingMore = false;
+                await Task.Delay(1000); // Wait before allowing another load
+                _isThrottleActive = false;
+            }
+        }
+
+
+
         private async Task NavigateToDetailsAsync(FoodItemDto product)
         {
             Debug.WriteLine("Clickable");
@@ -81,9 +118,9 @@ namespace FoodDeliveryApp.MVVM
                 if (product != null)
                 {
                     var navigationParameter = new Dictionary<string, object>
-        {
-            { "SelectedProductID", product.FoodItemId.ToString() }
-        };
+                    {
+                        { "SelectedProductID", product.Id.ToString() }
+                    };
                     await Shell.Current.GoToAsync("ProductDetailsPage", true, navigationParameter);
                 }
             }
@@ -93,10 +130,19 @@ namespace FoodDeliveryApp.MVVM
                 throw;
             }
         }
+
         [RelayCommand]
         private async Task NavigateBack()
         {
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("..", true);
+        }
+
+        [RelayCommand]
+        private async Task LoadMore()
+        {
+            Debug.WriteLine("Triggered");
+            // Triggered when user pulls up
+            await LoadMoreItemsAsync();
         }
     }
 }

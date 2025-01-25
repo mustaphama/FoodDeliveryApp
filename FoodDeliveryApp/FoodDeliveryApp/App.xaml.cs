@@ -21,10 +21,10 @@ namespace FoodDeliveryApp
             }
             RegisterRoutes();
 
-
         }
         private void RegisterRoutes()
         {
+
             Routing.RegisterRoute("ProductDetailsPage", typeof(ProductDetailsPage));
             Routing.RegisterRoute("ModifyAddressPage", typeof(ModifyAddressPage));
             Routing.RegisterRoute("ModifyPhonePage", typeof(ModifyPhonePage));
@@ -36,7 +36,9 @@ namespace FoodDeliveryApp
             Routing.RegisterRoute("OrderStatusPage", typeof(OrderStatusPage));
             Routing.RegisterRoute("CategoryPage", typeof(CategoryPage));
             Routing.RegisterRoute("SearchPage", typeof(SearchPage));
-
+            Routing.RegisterRoute("LoginPage", typeof(LoginPage));
+            Routing.RegisterRoute("RegisterPage", typeof(RegisterPage));
+            Routing.RegisterRoute("RestaurantPage", typeof(RestaurantPage));
         }
         private bool IsUserLoggedIn()
         {

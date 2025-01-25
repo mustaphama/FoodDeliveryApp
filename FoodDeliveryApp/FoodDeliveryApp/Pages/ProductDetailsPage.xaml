@@ -7,6 +7,8 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:ImageUrlFromIdConverter x:Key="ImageUrlFromIdConverter" />
+            <converters:ImageUrlFromRestaurantIdConverter x:Key="ImageUrlFromRestaurantIdConverter" />
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -23,12 +25,15 @@
         <!-- Main content (image, labels, quantity choice, etc.) -->
         <ScrollView Grid.Row="0">
             <VerticalStackLayout>
-                <Frame Padding="0" BorderColor="LightGray" CornerRadius="0" HeightRequest="300">
-                    <!-- Image in the top half -->
-                    <Image Source="{Binding SelectedProduct.Id, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                <Frame Padding="0" BorderColor="{AppThemeBinding Light=LightGray,Dark=#0f0f0f}" CornerRadius="0" HeightRequest="300">
+                    <Grid>
+                        <!-- Image in the top half -->
+                        <Image Grid.Row="0" Source="{Binding SelectedProduct.Id, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                        <Button Grid.Row="0" ZIndex="1" Text="&#xf053;" FontFamily="FontAwesome" FontSize="20" Command="{Binding NavigateBackCommand}" FontAttributes="Bold" Margin="10,0,0,0" VerticalOptions="Start" HorizontalOptions="Start" BackgroundColor="Transparent" TextColor="Black"/>
+                    </Grid>
                 </Frame>
                 <Label Text="{Binding SelectedProduct.Name}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" Margin="0,10,0,0" />
-                <Label Text="{Binding SelectedProduct.Price}" FontSize="18" TextColor="Green" HorizontalTextAlignment="Center" />
+                <Label Text="{Binding SelectedProduct.Price, StringFormat='{0:C}'}" FontSize="18" TextColor="{AppThemeBinding Light=Green,Dark=LightGreen}" HorizontalTextAlignment="Center" />
                 <BoxView HeightRequest="0.25" BackgroundColor="LightGray" Margin="0,20,0,20" />
                 <Label Text="Description: " FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="Start" Padding="10"/>
                 <Label Text="{Binding SelectedProduct.Description}" FontSize="16" HorizontalTextAlignment="Start" Margin="10,5,10,5"/>
@@ -43,20 +48,20 @@
                                 CornerRadius="50"
                                 FontAttributes="Bold" 
                                 BackgroundColor="Transparent"
-                                TextColor="Black"
+                                TextColor="{AppThemeBinding Light=Black,Dark=White}"
                                 FontSize="20"
                                 Command="{Binding DecreaseQuantityCommand}" 
                                 IsEnabled="{Binding CanDecreaseQuantity}">
                             <Button.Triggers>
                                 <Trigger TargetType="Button" Property="IsPressed" Value="True">
-                                    <Setter Property="BackgroundColor" Value="#E1E1E1" />
+                                    <Setter Property="BackgroundColor" Value="Gray" />
                                 </Trigger>
                                 <Trigger TargetType="Button" Property="IsEnabled" Value="False">
-                                    <Setter Property="TextColor" Value="LightGray" />
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=LightGray,Dark=DarkGray}" />
                                     <Setter Property="BackgroundColor" Value="Transparent" />
                                 </Trigger>
                                 <Trigger TargetType="Button" Property="IsEnabled" Value="True">
-                                    <Setter Property="TextColor" Value="Black" />
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Black,Dark=White}" />
                                     <Setter Property="BackgroundColor" Value="Transparent" />
                                 </Trigger>
                             </Button.Triggers>
@@ -76,21 +81,141 @@
                                 Padding="0"
                                 FontSize="20"
                                 BackgroundColor="Transparent"
-                                TextColor="Black"
+                                TextColor="{AppThemeBinding Light=Black,Dark=White}"
                                 Command="{Binding IncreaseQuantityCommand}" 
                                 IsEnabled="{Binding CanIncreaseQuantity}">
                             <Button.Triggers>
                                 <Trigger TargetType="Button" Property="IsPressed" Value="True">
-                                    <Setter Property="BackgroundColor" Value="#E1E1E1" />
+                                    <Setter Property="BackgroundColor" Value="Gray" />
                                 </Trigger>
                                 <Trigger TargetType="Button" Property="IsEnabled" Value="False">
-                                    <Setter Property="TextColor" Value="LightGray" />
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=LightGray,Dark=DarkGray}" />
+                                    <Setter Property="BackgroundColor" Value="Transparent" />
+                                </Trigger>
+                                <Trigger TargetType="Button" Property="IsEnabled" Value="True">
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Black,Dark=White}" />
                                     <Setter Property="BackgroundColor" Value="Transparent" />
                                 </Trigger>
                             </Button.Triggers>
                         </Button>
                     </Grid>
                 </Frame>
+                <Frame BorderColor="{AppThemeBinding Light=LightGray,Dark=#505050}" Margin="10" Padding="5">
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="2*,8*" ColumnSpacing="10" RowSpacing="0">
+                        
+                        <Frame Grid.Column="0"  Grid.RowSpan="2" Padding="0" Margin="2">
+                            <Image Source="{Binding SelectedProduct.Restaurant.Id, Converter={StaticResource ImageUrlFromRestaurantIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                        </Frame>
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding SelectedProduct.Restaurant.Name}" FontAttributes="Bold" VerticalOptions="End" FontSize="14"/>
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding SelectedProduct.Restaurant.Address}" VerticalOptions="Start" FontSize="12"/>
+                    </Grid>
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToRestaurantCommand}"
+          CommandParameter="{Binding SelectedProduct}" />
+                    </Frame.GestureRecognizers>
+                </Frame>
+
+                <BoxView HeightRequest="0.25" BackgroundColor="LightGray" Margin="0,20,0,20" />
+
+                <Label Text="Recommended" FontAttributes="Bold" FontSize="18" Margin="5,10,0,5" />
+                <CollectionView ItemsSource="{Binding Recommendations}" Margin="0,0,0,10">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Horizontal" Span="1" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid RowDefinitions="3*,*" ColumnDefinitions="*" Padding ="5">
+                                <Grid.GestureRecognizers>
+                                    <!-- TapGestureRecognizer for navigation -->
+                                    <TapGestureRecognizer 
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HomeViewModel}}, Path=NavigateToDetailsCommand}" 
+                        CommandParameter="{Binding}"/>
+                                </Grid.GestureRecognizers>
+                                <Border Stroke="{StaticResource OffBlack}"
+StrokeThickness="0.3"
+Background="Transparent" Padding="0"  HeightRequest="150" WidthRequest="150" >
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10"/>
+                                    </Border.StrokeShape>
+                                    <!-- Image in the top half -->
+                                    <Image Source="{Binding Id, Converter={StaticResource ImageUrlFromIdConverter}}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                                    <!-- Details in the bottom half -->
+                                    <Border.GestureRecognizers>
+                                        <!-- TapGestureRecognizer for navigation -->
+                                        <TapGestureRecognizer 
+                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HomeViewModel}}, Path=NavigateToDetailsCommand}" 
+                CommandParameter="{Binding}"/>
+                                    </Border.GestureRecognizers>
+
+                                </Border>
+                                <VerticalStackLayout Grid.Row="1" Padding="10,1,1,1" Margin="1" Spacing="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="Start" />
+                                    <Label FontSize="12" HorizontalTextAlignment="Start" TextColor="{AppThemeBinding Light=DarkSlateGrey, Dark=DarkGray}">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0} ★ ({1}+) · 25 min">
+                                                <Binding Path="Ratings" />
+                                                <Binding Path="NumOfReviews" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="Start" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <BoxView HeightRequest="0.25" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}" Margin="0" />
+
+                <!-- Rating -->
+                <Label Text="Rate this product:" FontSize="18" HorizontalOptions="Center" Margin="10" />
+
+                <HorizontalStackLayout IsVisible="{Binding IsSubmitEnabled}"  HorizontalOptions="Center" Margin="10">
+                    <Label Text="&#xf005;"
+                   FontSize="30"
+                   FontFamily="{Binding Star1FontFamily}"
+                   >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TapStar1}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="&#xf005;"
+                   FontSize="30"
+                   FontFamily="{Binding Star2FontFamily}"
+                   >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TapStar2}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="&#xf005;"
+                   FontSize="30"
+                   FontFamily="{Binding Star3FontFamily}"
+                   >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TapStar3}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="&#xf005;"
+                   FontSize="30"
+                   FontFamily="{Binding Star4FontFamily}"
+                    >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TapStar4}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="&#xf005;"
+                   FontSize="30"
+                   FontFamily="{Binding Star5FontFamily}"
+                   >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TapStar5}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+
+                <!-- Submit Button -->
+                <Button Text="Submit Rating" Command="{Binding SubmitRatingCommand}" IsVisible="{Binding IsSubmitEnabled}" Margin="10"  HorizontalOptions="Center" />
+                <Label Text="{Binding Message}" Margin="10" FontSize="14" IsVisible="{Binding IsSubmitEnabled,Converter={StaticResource InverseBooleanConverter}}"/>
             </VerticalStackLayout>
         </ScrollView>
 
@@ -116,6 +241,7 @@
         </Button>
         <Button FontSize="16"
                 x:Name="CheckCartButton"
+                Grid.Row="1"
     CornerRadius="50"
                     Padding="12"
     HeightRequest="50"
@@ -123,12 +249,13 @@
     HorizontalOptions="Center"
     VerticalOptions="End"
     Command="{Binding NavigateToCartCommand}"
-    BackgroundColor="Black"
-    TextColor="White"
-    Margin="0,10,0,10"
+    BackgroundColor="{AppThemeBinding Light=Black,Dark=White}"
+    TextColor="{AppThemeBinding Light=White,Dark=Black}"
+    Margin="5,10,5,10"
                 IsVisible="False">
             <Button.ImageSource>
-                <FileImageSource File="cart_icon.png" />
+                <FileImageSource File="cart_icon.png"/>
+                
             </Button.ImageSource>
             <Button.Text>
                 Check Cart · 6
